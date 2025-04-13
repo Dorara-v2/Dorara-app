@@ -1,5 +1,4 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import HomeScreen from "screens/HomeScreen";
 import OnboardingFirst from "screens/OnboardingFirst";
 
 

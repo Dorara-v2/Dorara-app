@@ -1,9 +1,8 @@
-import { MaterialIcons } from "@expo/vector-icons";
 import ScreenContent from "components/ScreenContent";
 import { Typo } from "components/Typo";
-import { useColorScheme } from "nativewind";
 import { Image, TouchableOpacity, View, Animated } from "react-native";
 import { useEffect, useRef } from "react";
+import { signInWithGoogle } from "utils/googleOauth";
 
 export default function OnboardingFirst() {
     
@@ -11,6 +10,7 @@ export default function OnboardingFirst() {
     const titleAnim = useRef(new Animated.Value(0)).current;
     const descAnim = useRef(new Animated.Value(0)).current;
     const buttonAnim = useRef(new Animated.Value(0)).current;
+
 
     useEffect(() => {
         Animated.sequence([
@@ -117,7 +117,7 @@ export default function OnboardingFirst() {
                         className="bg-[#f3a49d] rounded-xl px-6 py-4 mb-4"
                         activeOpacity={0.8}
                         onPress={() => {
-                            console.log("Continue Offline");
+                            // console.log("Continue Offline");
                         }}
                     >
                         <Typo color="#000" className="text-white text-lg text-center font-bold">
@@ -132,7 +132,7 @@ export default function OnboardingFirst() {
                         activeOpacity={0.8}
                         className="flex flex-row justify-between items-center rounded-xl px-24 py-4"
                         onPress={() => {
-                            console.log("Login with Google");
+                            signInWithGoogle();
                         }}
                     >
                         <Typo color="#000" className="text-lg text-center font-bold">

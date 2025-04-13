@@ -10,6 +10,7 @@
       "tsconfigPaths": true
     },
     "plugins": [
+      ["@react-native-google-signin/google-signin"],
       [
         "expo-dev-launcher",
         {
@@ -30,14 +31,15 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.calc.Dorara"
+      "bundleIdentifier": "com.calc.dorara"
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#f3a49d"
       },
-      "package": "com.calc.Dorara"
+      "package": "com.calc.dorara"
     },
     "extra": {
       "eas": {

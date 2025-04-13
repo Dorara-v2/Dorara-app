@@ -22,7 +22,7 @@ export default function App() {
     try{
       const Scheme = await AsyncStorage.getItem('colorScheme')
       if(!Scheme){
-        console.log('No color scheme found')
+        // console.log('No color scheme found')
         colorScheme.set('system')
         return
       }
