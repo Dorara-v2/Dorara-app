@@ -1,25 +1,27 @@
-import { Text, View } from 'react-native';
+import React, { ReactNode } from 'react'
+import { View, SafeAreaView, StatusBar } from 'react-native'
+import { useColorScheme } from 'nativewind'
 
-import { EditScreenInfo } from './EditScreenInfo';
+interface ScreenContentProps {
+    children: ReactNode
+    className?: string
+}
 
-type ScreenContentProps = {
-  title: string;
-  path: string;
-  children?: React.ReactNode;
-};
+const ScreenContent = ({ children, className = '' }: ScreenContentProps) => {
+    const { colorScheme } = useColorScheme()
+    const isDark = colorScheme === 'dark'
 
-export const ScreenContent = ({ title, path, children }: ScreenContentProps) => {
-  return (
-    <View className={styles.container}>
-      <Text className={styles.title}>{title}</Text>
-      <View className={styles.separator} />
-      <EditScreenInfo path={path} />
-      {children}
-    </View>
-  );
-};
-const styles = {
-  container: `items-center flex-1 justify-center`,
-  separator: `h-[1px] my-7 w-4/5 bg-gray-200`,
-  title: `text-xl font-bold`,
-};
+    return (
+        <SafeAreaView className={`flex-1 ${isDark ? 'bg-neutral-900' : 'bg-white'}`}>
+            <StatusBar 
+                barStyle={isDark ? 'light-content' : 'dark-content'}
+                backgroundColor={isDark ? '#171717' : '#ffffff'}
+            />
+            <View className={`flex-1 p-4${className}`}>
+                {children}
+            </View>
+        </SafeAreaView>
+    )
+}
+
+export default ScreenContent

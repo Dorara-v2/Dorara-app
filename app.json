@@ -3,15 +3,12 @@
     "name": "Dorara",
     "slug": "Dorara",
     "version": "1.0.0",
-
     "web": {
       "favicon": "./assets/favicon.png"
     },
-
     "experiments": {
       "tsconfigPaths": true
     },
-
     "plugins": [
       [
         "expo-dev-launcher",
@@ -20,25 +17,31 @@
         }
       ]
     ],
-
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-
+    "icon": "./assets/adaptive-icon.png",
     "userInterfaceStyle": "light",
-
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.calc.Dorara"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#f3a49d"
+      },
+      "package": "com.calc.Dorara"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "25e1d6be-a2af-4913-995a-bdb5f627b076"
       }
     }
   }
