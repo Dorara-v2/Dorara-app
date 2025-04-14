@@ -3,7 +3,8 @@ import DrawerNavigator from './DrawerNavigator';
 import SettingsScreen from 'screens/Settings';
 import { TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import NoteEditor from 'screens/NoteEditor';
 
 const Stack = createStackNavigator();
 
@@ -27,12 +28,32 @@ export default function MainNavigator() {
                 onPress={() => {
                   navigation.goBack();
                 }}>
-                <Ionicons name="arrow-back" size={24} color="black" />
+                <MaterialIcons name="arrow-back" size={24} color="black" />
               </TouchableOpacity>
             );
           },
         }}
       />
+      <Stack.Screen
+        name='NoteEditor'
+        component={NoteEditor}
+        options={{
+          headerShown: true,
+          title: 'Note Editor',
+          headerTitleAlign: 'center',
+          headerLeft: () => {
+            const navigation = useNavigation();
+            return (
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.goBack();
+                }}>
+                <MaterialIcons name="arrow-back" size={24} color="black" />
+              </TouchableOpacity>
+            );
+          },
+        }}
+        />
     </Stack.Navigator>
   );
 }

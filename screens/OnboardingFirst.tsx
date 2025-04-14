@@ -5,9 +5,10 @@ import { useEffect, useRef } from "react";
 import { signInWithGoogle } from "utils/googleOauth";
 import { ensureBaseNotesFolder } from "utils/offlineDirectory/createDoraraFolder";
 import { setUserUsagePref } from "utils/extra";
+import { useNavigation } from "@react-navigation/native";
 
 export default function OnboardingFirst() {
-    
+    const navigation = useNavigation()
     const imageAnim = useRef(new Animated.Value(0)).current;
     const titleAnim = useRef(new Animated.Value(0)).current;
     const descAnim = useRef(new Animated.Value(0)).current;

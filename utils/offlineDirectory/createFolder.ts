@@ -8,8 +8,10 @@ export const createFolder = async (relativePath: string) => {
     if (!dirInfo.exists) {
         console.log("Creating folder:", NOTES_BASE_PATH+relativePath);
         await FileSystem.makeDirectoryAsync(`${NOTES_BASE_PATH}${relativePath}`, { intermediates: true });
+        return true
     } else {
         console.log("Folder already exists:", relativePath);
+        return false
     }
 }
 

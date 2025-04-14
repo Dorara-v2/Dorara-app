@@ -3,8 +3,8 @@ import { FolderItem } from "components/FolderItem";
 import ScreenContent from "components/ScreenContent";
 import { Typo } from "components/Typo";
 import { useColorScheme } from "nativewind";
-import { useEffect, useState } from "react";
-import { Animated, FlatList, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import { Animated, FlatList, Text, TouchableOpacity, View, ActivityIndicator, Alert } from "react-native";
 import { createFile } from "utils/offlineDirectory/createFiles";
 import { deleteFolder } from "utils/offlineDirectory/deleteFolder";
 import { fetchFolders } from "utils/offlineDirectory/fetchFolders";
@@ -23,6 +23,19 @@ export default function NotesScreen() {
     const [dialogVisible, setDialogVisible] = useState(false);
     const [createType, setCreateType] = useState<"file" | "folder">("folder");
     const [isLoading, setIsLoading] = useState(false);
+
+    const relativePath = useMemo(() => {
+        return currentDirectory === "" ? "" : `${directoryArray.filter(Boolean).join("/")}`;
+    }
+    , [currentDirectory, directoryArray]);
+
+    const sortedFolders = useMemo(() => {
+        return [...folders].sort((a, b) => {
+            if (a.isDirectory && !b.isDirectory) return -1;
+            if (!a.isDirectory && b.isDirectory) return 1;
+            return a.name.localeCompare(b.name);
+        });
+    }, [folders]);
 
     const toggleMenu = () => {
         const toValue = isMenuOpen ? 0 : 1;
@@ -47,7 +60,8 @@ export default function NotesScreen() {
         try {
             setContent("Loading folders...");
             setLoading(true);
-            const folders = await fetchFolders(currentDirectory);
+            // const relativePath = currentDirectory === "" ? "" : `${directoryArray.filter(Boolean).join("/")}`;
+            const folders = await fetchFolders(relativePath);
             setFolders(folders);
         } catch (error) {
             console.error("Error fetching folders:", error);
@@ -57,17 +71,24 @@ export default function NotesScreen() {
     };
 
     useEffect(() => {
-        
+        // folders.map(folder => deleteFolder(folder.name))
         loadFolders();
     }, [currentDirectory]);
 
     const handleCreate = (name: string) => {
         if (createType === "folder") {
-            createFolder(`${currentDirectory}/${name}`).then(() => {
+            // const relativePath = currentDirectory === "" ? name : `${directoryArray.filter(Boolean).join("/")}/${name}`;
+            console.log("Creating folder:", relativePath, name);
+            createFolder(`${relativePath}/${name}`).then((success) => {
+                if(!success) Alert.alert("Folder already exists", "Please choose a different name");
                 loadFolders();
             });
         } else {
             console.log("Creating file:", name);
+            createFile(`${name}.md`, relativePath).then((success) => {
+                if(!success) Alert.alert("File already exists", "Please choose a different name");
+                loadFolders();
+            });
         }
     };
 
@@ -82,11 +103,11 @@ export default function NotesScreen() {
                     )}
                 </TouchableOpacity>
                 <Typo className="text-2xl font-semibold ml-4">
-                    {currentDirectory === "" ? "Notes" : currentDirectory}
+                    {currentDirectory === "" ? "Notes" : relativePath}
                 </Typo>
             </View>
             <FlatList
-                data={folders}
+                data={sortedFolders}
                 keyExtractor={(item) => item.name}
                 renderItem={({ item }) => (
                     <>
@@ -94,10 +115,11 @@ export default function NotesScreen() {
                         file={item}
                         setCurrentDirectory={setCurrentDirectory}
                         setDirectoryArray={setDirectoryArray}
+                        currentPath={relativePath}
                     />}
                     {isLoading && <View style={{ height: 'auto', width: 'auto', backgroundColor: colorScheme === "dark" ? "#1f1f1f" : "white" }}>
                         
-                        </View>}
+                    </View>}
                     </>
                 )}
                 ListEmptyComponent={

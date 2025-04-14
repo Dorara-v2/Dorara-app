@@ -8,7 +8,7 @@ export const fetchFolders = async (relativePath: string = '') => {
         if (!dirInfo.exists) {
             return [];
         }
-
+        console.log("fetching folder of ", `${NOTES_BASE_PATH}/${relativePath}`)
         const items = await FileSystem.readDirectoryAsync(`${NOTES_BASE_PATH}/${relativePath}`);
         
         const folders = await Promise.all(
