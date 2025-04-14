@@ -25,9 +25,9 @@ export default function HomeScreen() {
                 </Typo>
                 </TouchableOpacity>
                 <Typo className="text-3xl font-bold text-center">
-                    {user.displayName}
+                    Welcome to Dorara
                 </Typo>
-                <Image src={user.photoURL} className="w-24 h-24 rounded-full mx-auto mt-4" />
+                {/* <Image src={user.photoURL} className="w-24 h-24 rounded-full mx-auto mt-4" /> */}
                 <TouchableOpacity onPress={signOut} className="bg-[#f3a49d] rounded-xl px-6 py-4 mb-4">
                     <Typo color="#000" className="text-white text-lg text-center font-bold">
                         Sign Out

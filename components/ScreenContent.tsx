@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 import { View, SafeAreaView, StatusBar } from 'react-native'
 import { useColorScheme } from 'nativewind'
 

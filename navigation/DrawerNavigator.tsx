@@ -4,6 +4,7 @@ import CustomDrawer from "components/CustomDrawer";
 import CustomHeader from "components/CustomHeader";
 import { useColorScheme } from "nativewind";
 import HomeScreen from "screens/HomeScreen";
+import NotesScreen from "screens/Notes";
 import { getDrawerColors } from "utils/colors";
 
 
@@ -43,7 +44,7 @@ export default function DrawerNavigator() {
             ),
         }}
       />
-      <Drawer.Screen name="Notes" component={HomeScreen} 
+      <Drawer.Screen name="Notes" component={NotesScreen} 
         options={{
             drawerIcon: ({ color }) => (
                 <MaterialIcons name="notes" size={30} color={color} />

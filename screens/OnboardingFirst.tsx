@@ -3,6 +3,8 @@ import { Typo } from "components/Typo";
 import { Image, TouchableOpacity, View, Animated } from "react-native";
 import { useEffect, useRef } from "react";
 import { signInWithGoogle } from "utils/googleOauth";
+import { ensureBaseNotesFolder } from "utils/offlineDirectory/createDoraraFolder";
+import { setUserUsagePref } from "utils/extra";
 
 export default function OnboardingFirst() {
     
@@ -117,7 +119,8 @@ export default function OnboardingFirst() {
                         className="bg-[#f3a49d] rounded-xl px-6 py-4 mb-4"
                         activeOpacity={0.8}
                         onPress={() => {
-                            // console.log("Continue Offline");
+                            setUserUsagePref('offline')
+                            ensureBaseNotesFolder();
                         }}
                     >
                         <Typo color="#000" className="text-white text-lg text-center font-bold">
