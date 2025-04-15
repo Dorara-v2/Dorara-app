@@ -11,6 +11,7 @@ export const createFolder = async (relativePath: string) => {
         return true
     } else {
         console.log("Folder already exists:", relativePath);
+        
         return false
     }
 }

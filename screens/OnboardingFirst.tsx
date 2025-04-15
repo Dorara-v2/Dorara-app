@@ -6,9 +6,11 @@ import { signInWithGoogle } from "utils/googleOauth";
 import { ensureBaseNotesFolder } from "utils/offlineDirectory/createDoraraFolder";
 import { setUserUsagePref } from "utils/extra";
 import { useNavigation } from "@react-navigation/native";
+import { GUEST_USER, useUserStore } from "store/userStore";
 
 export default function OnboardingFirst() {
-    const navigation = useNavigation()
+    // const navigation = useNavigation()
+    const { setAuthState, setUser } = useUserStore()
     const imageAnim = useRef(new Animated.Value(0)).current;
     const titleAnim = useRef(new Animated.Value(0)).current;
     const descAnim = useRef(new Animated.Value(0)).current;
@@ -122,6 +124,8 @@ export default function OnboardingFirst() {
                         onPress={() => {
                             setUserUsagePref('offline')
                             ensureBaseNotesFolder();
+                            setUser(GUEST_USER)
+                            setAuthState('guest')
                         }}
                     >
                         <Typo color="#000" className="text-white text-lg text-center font-bold">
@@ -135,8 +139,10 @@ export default function OnboardingFirst() {
                         }}
                         activeOpacity={0.8}
                         className="flex flex-row justify-between items-center rounded-xl px-24 py-4"
-                        onPress={() => {
+                        onPress={async () => {
                             signInWithGoogle();
+                            setUserUsagePref('online')
+                            ensureBaseNotesFolder();
                         }}
                     >
                         <Typo color="#000" className="text-lg text-center font-bold">
