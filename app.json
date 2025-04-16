@@ -1,8 +1,10 @@
 {
   "expo": {
+
     "name": "Dorara",
     "slug": "Dorara",
     "version": "1.0.0",
+    
     "web": {
       "favicon": "./assets/favicon.png"
     },
@@ -22,7 +24,7 @@
     "icon": "./assets/adaptive-icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/adaptive-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -43,8 +45,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "25e1d6be-a2af-4913-995a-bdb5f627b076"
+        "projectId": "25e1d6be-a2af-4913-995a-bdb5f627b076"        
       }
+      
     }
   }
 }

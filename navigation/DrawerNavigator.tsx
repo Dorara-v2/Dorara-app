@@ -2,6 +2,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import CustomDrawer from "components/CustomDrawer";
 import CustomHeader from "components/CustomHeader";
+import { MaterialIcon } from "components/MaterialIcon";
 import { useColorScheme } from "nativewind";
 import HomeScreen from "screens/HomeScreen";
 import NotesScreen from "screens/NotesScreen";
@@ -33,42 +34,42 @@ export default function DrawerNavigator() {
       <Drawer.Screen name="Home" component={HomeScreen} 
         options={{
             drawerIcon: ({ color }) => (
-                <MaterialIcons name="home" size={30} color={color} />
+                <MaterialIcon name="home" size={30} color={color} />
             ),
         }}
       />
       <Drawer.Screen name="Todo/Tasks" component={HomeScreen} 
         options={{
             drawerIcon: ({ color }) => (
-                <MaterialIcons name="checklist" size={30} color={color} />
+                <MaterialIcon name="checklist" size={30} color={color} />
             ),
         }}
       />
       <Drawer.Screen name="Notes" component={NotesScreen} 
         options={{
             drawerIcon: ({ color }) => (
-                <MaterialIcons name="notes" size={30} color={color} />
+                <MaterialIcon name="notes" size={30} color={color} />
             ),
         }}
       />
       <Drawer.Screen name="Bookmarks" component={HomeScreen} 
         options={{
             drawerIcon: ({ color }) => (
-                <MaterialIcons name="bookmark" size={30} color={color} />
+                <MaterialIcon name="bookmark" size={30} color={color} />
             ),
         }}
       />
       <Drawer.Screen name="Routines" component={HomeScreen} 
         options={{
             drawerIcon: ({color}) => (
-                <MaterialIcons name="schedule" size={30} color={color} />
+                <MaterialIcon name="schedule" size={30} color={color} />
             )
         }}
       />
       <Drawer.Screen name="Expense" component={HomeScreen} 
         options={{
             drawerIcon: ({color}) => (
-                <MaterialIcons name="currency-rupee" size={30} color={color} />
+                <MaterialIcon name="currency-rupee" size={30} color={color} />
             )
 
         }}

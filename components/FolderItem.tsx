@@ -2,19 +2,20 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Typo } from 'components/Typo';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProp, ParamListBase } from '@react-navigation/native';
-import { TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View, ToastAndroid } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import { NOTES_BASE_PATH } from 'utils/offlineDirectory/createDoraraFolder';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';
 import { CreateDialog } from './CreateDialog';
+import { DeleteDialog } from './DeleteDialog';
 
 type FolderItemProps = {
   file: { name: string; isDirectory: boolean };
   setCurrentDirectory: React.Dispatch<React.SetStateAction<string>>;
   setDirectoryArray: React.Dispatch<React.SetStateAction<string[]>>;
   currentPath: string;
-  loadFolders: () => Promise<void>
+  loadFolders: () => Promise<void>;
 };
 
 export const FolderItem = ({
@@ -22,10 +23,11 @@ export const FolderItem = ({
   setCurrentDirectory,
   setDirectoryArray,
   currentPath,
-  loadFolders
+  loadFolders,
 }: FolderItemProps) => {
   const [menuVisible, setMenuVisible] = useState(false);
   const [isDialogVisible, setIsDialogVisible] = useState(false);
+  const [isDeleteDialogVisible, setIsDeleteDialogVisible] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
   const { colorScheme } = useColorScheme();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
@@ -55,7 +57,7 @@ export const FolderItem = ({
 
   const handleRename = async (name: string) => {
     // TODO: Implement rename functionality
-    console.log(name)
+    console.log(name);
 
     setMenuVisible(false);
   };
@@ -64,11 +66,14 @@ export const FolderItem = ({
     try {
       const filePath = `${NOTES_BASE_PATH}${currentPath}/${file.name}`;
       await FileSystem.deleteAsync(filePath);
-      loadFolders()
+      await loadFolders();
       setCurrentDirectory((curr) => curr);
+      ToastAndroid.show('Item deleted successfully', ToastAndroid.SHORT);
     } catch (error) {
       console.error('Error deleting item:', error);
+      ToastAndroid.show('Error deleting item', ToastAndroid.SHORT);
     }
+    setIsDeleteDialogVisible(false);
     setMenuVisible(false);
   };
 
@@ -77,9 +82,6 @@ export const FolderItem = ({
     : file.name.endsWith('.md')
     ? file.name.slice(0, -3)
     : file.name;
-
-   
-
 
   return (
     <View>
@@ -110,12 +112,10 @@ export const FolderItem = ({
         >
           <TouchableOpacity
             className="flex-row items-center p-3"
-            onPress={
-                () => {
-                    setIsDialogVisible(true)
-                    setMenuVisible(false)
-                }
-            }
+            onPress={() => {
+              setIsDialogVisible(true);
+              setMenuVisible(false);
+            }}
           >
             <MaterialIcons name="edit" size={24} color="#f3a49d" />
             <Typo className="ml-2">Rename</Typo>
@@ -125,7 +125,10 @@ export const FolderItem = ({
 
           <TouchableOpacity
             className="flex-row items-center p-3"
-            onPress={handleDelete}
+            onPress={() => {
+              setIsDeleteDialogVisible(true);
+              setMenuVisible(false);
+            }}
           >
             <MaterialIcons name="delete" size={24} color="#f3a49d" />
             <Typo className="ml-2">Delete</Typo>
@@ -142,7 +145,7 @@ export const FolderItem = ({
           </TouchableOpacity>
         </View>
       )}
-      <CreateDialog 
+      <CreateDialog
         visible={isDialogVisible}
         onClose={() => setIsDialogVisible(false)}
         onSubmit={handleRename}
@@ -150,6 +153,12 @@ export const FolderItem = ({
         label={`Rename ${file.name}`}
         placeholder={`Enter new name`}
         success="Rename"
+      />
+      <DeleteDialog
+        visible={isDeleteDialogVisible}
+        onClose={() => setIsDeleteDialogVisible(false)}
+        onDelete={handleDelete}
+        itemName={displayName}
       />
     </View>
   );

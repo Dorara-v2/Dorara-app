@@ -1,17 +1,15 @@
-import { MaterialIcons } from "@expo/vector-icons";
 import { FolderItem } from "components/FolderItem";
 import ScreenContent from "components/ScreenContent";
 import { Typo } from "components/Typo";
 import { useColorScheme } from "nativewind";
 import { useEffect, useMemo, useState } from "react";
-import { Animated, FlatList, Text, TouchableOpacity, View, ActivityIndicator, Alert } from "react-native";
+import { Animated, FlatList, Text, TouchableOpacity, View, ActivityIndicator, Alert, Image } from "react-native";
 import { createFile } from "utils/offlineDirectory/createFiles";
-import { deleteFolder } from "utils/offlineDirectory/deleteFolder";
 import { fetchFolders } from "utils/offlineDirectory/fetchFolders";
 import { CreateDialog } from "components/CreateDialog";
 import { createFolder } from "utils/offlineDirectory/createFolder";
 import { useLoadingStore } from "store/loadingStore";
-
+import { MaterialIcon } from "components/MaterialIcon";
 export default function NotesScreen() {
     const { setContent, setLoading } = useLoadingStore();
     const { colorScheme } = useColorScheme();
@@ -23,6 +21,12 @@ export default function NotesScreen() {
     const [dialogVisible, setDialogVisible] = useState(false);
     const [createType, setCreateType] = useState<"file" | "folder">("folder");
     const [isLoading, setIsLoading] = useState(false);
+    const [alertConfig, setAlertConfig] = useState({
+        visible: false,
+        title: '',
+        message: '',
+        type: 'success' as const
+    });
 
     const relativePath = useMemo(() => {
         return currentDirectory === "" ? "" : `${directoryArray.filter(Boolean).join("/")}`;
@@ -77,7 +81,7 @@ export default function NotesScreen() {
     const handleCreate = (name: string) => {
         if (createType === "folder") {
             createFolder(`${relativePath}/${name}`).then((success) => {
-                if(!success) Alert.alert("Folder already exists", "Please choose a different name");
+                if(!success) Alert.alert("Folder already exists", "Please choose a different name", [{}]);
                 loadFolders();
             });
         } else {
@@ -94,7 +98,7 @@ export default function NotesScreen() {
                 <TouchableOpacity onPress={handleBack} disabled={directoryArray.length <= 1}>
                     {currentDirectory !== "" && (
                         <Typo>
-                            <MaterialIcons name="arrow-back" size={30} />
+                            <MaterialIcon name="arrow-back" size={30} />
                         </Typo>
                     )}
                 </TouchableOpacity>
@@ -126,9 +130,10 @@ export default function NotesScreen() {
                             <Typo className="text-lg mt-4">Loading folders...</Typo>
                         </View>
                     ) : (
-                        <View className="flex-1 items-center justify-center py-8">
-                            <Typo className="text-lg font-semibold">No folders found</Typo>
-                        </View>
+                        <ScreenContent className="flex-1 items-center justify-center py-8">
+                            <Image source={require("../assets/puffLick.png")} className="w-64 h-64 " resizeMode="contain"/>
+                            <Typo className="text-xl mt-4">Nothing Here</Typo>
+                        </ScreenContent>
                     )
                 }
                 onRefresh={() => {
@@ -180,7 +185,7 @@ export default function NotesScreen() {
                                     toggleMenu();
                                 }}
                             >
-                                <MaterialIcons name="description" size={24} color="#f3a49d" />
+                                <MaterialIcon name="description" size={24} color="#f3a49d" />
                                 <Typo className="ml-2">New File</Typo>
                             </TouchableOpacity>
 
@@ -193,7 +198,7 @@ export default function NotesScreen() {
                                     toggleMenu();
                                 }}
                             >
-                                <MaterialIcons name="create-new-folder" size={24} color="#f3a49d" />
+                                <MaterialIcon name="create-new-folder" size={24} color="#f3a49d" />
                                 <Typo className="ml-2">New Folder</Typo>
                             </TouchableOpacity>
                         </View>
@@ -228,7 +233,7 @@ export default function NotesScreen() {
                             ],
                         }}
                     >
-                        <MaterialIcons name="add" size={30} color="white" />
+                        <MaterialIcon name="add" size={30} color="white" />
                     </Animated.View>
                 </TouchableOpacity>
             </View>

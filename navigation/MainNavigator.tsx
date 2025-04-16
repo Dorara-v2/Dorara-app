@@ -5,6 +5,7 @@ import { TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import NoteEditor from 'screens/NoteEditor';
+import { MaterialIcon } from 'components/MaterialIcon';
 
 
 export type MainStackParamList = {
@@ -39,7 +40,7 @@ export default function MainNavigator() {
                 onPress={() => {
                   navigation.goBack();
                 }}>
-                <MaterialIcons name="arrow-back" size={24} color="black" />
+                <MaterialIcon name="arrow-back" size={24}/>
               </TouchableOpacity>
             );
           },
@@ -49,20 +50,10 @@ export default function MainNavigator() {
         name='NoteEditor'
         component={NoteEditor}
         options={{
-          headerShown: true,
+          headerShown: false,
           title: 'Note Editor',
           headerTitleAlign: 'center',
-          headerLeft: () => {
-            const navigation = useNavigation();
-            return (
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.goBack();
-                }}>
-                <MaterialIcons name="arrow-back" size={24} color="black" />
-              </TouchableOpacity>
-            );
-          },
+          
         }}
         />
     </Stack.Navigator>

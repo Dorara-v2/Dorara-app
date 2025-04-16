@@ -7,6 +7,8 @@ import auth from "@react-native-firebase/auth"
 import { GUEST_USER, useUserStore } from "store/userStore"
 import { useLoadingStore } from "store/loadingStore"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import ScreenContent from "components/ScreenContent"
+import { Image } from "react-native"
 
 
 export const RootNavigator = () => {
@@ -48,6 +50,11 @@ export const RootNavigator = () => {
             <MainNavigator />
             <GlobalLoading />
         </NavigationContainer>
+    )
+    else if(initializing) return(
+        <ScreenContent className="flex flex-row items-center justify-center">
+            <Image source={require('../assets/puffBlink.gif')} className='w-64 h-64 mb-2' resizeMode='contain' />
+        </ScreenContent>
     )
     
 }
