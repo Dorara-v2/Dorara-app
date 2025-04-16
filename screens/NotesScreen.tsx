@@ -71,20 +71,16 @@ export default function NotesScreen() {
     };
 
     useEffect(() => {
-        // folders.map(folder => deleteFolder(folder.name))
         loadFolders();
     }, [currentDirectory]);
 
     const handleCreate = (name: string) => {
         if (createType === "folder") {
-            // const relativePath = currentDirectory === "" ? name : `${directoryArray.filter(Boolean).join("/")}/${name}`;
-            console.log("Creating folder:", relativePath, name);
             createFolder(`${relativePath}/${name}`).then((success) => {
                 if(!success) Alert.alert("Folder already exists", "Please choose a different name");
                 loadFolders();
             });
         } else {
-            console.log("Creating file:", name);
             createFile(`${name}.md`, relativePath).then((success) => {
                 if(!success) Alert.alert("File already exists", "Please choose a different name");
                 loadFolders();
@@ -112,6 +108,7 @@ export default function NotesScreen() {
                 renderItem={({ item }) => (
                     <>
                     {!isLoading && <FolderItem
+                        loadFolders={loadFolders}
                         file={item}
                         setCurrentDirectory={setCurrentDirectory}
                         setDirectoryArray={setDirectoryArray}
@@ -135,7 +132,7 @@ export default function NotesScreen() {
                     )
                 }
                 onRefresh={() => {
-                    setCurrentDirectory("");
+                    loadFolders();
                 }}
                 refreshing={isLoading}
                 showsVerticalScrollIndicator={false}
@@ -240,6 +237,9 @@ export default function NotesScreen() {
                 onClose={() => setDialogVisible(false)}
                 onSubmit={handleCreate}
                 type={createType}
+                label={`Create New ${createType.charAt(0).toUpperCase() + createType.slice(1)}`}
+                success="Create"
+                placeholder={`Enter ${createType.charAt(0).toUpperCase() + createType.slice(1)} Name`}
             />
         </ScreenContent>
     );

@@ -24,19 +24,13 @@ export const RootNavigator = () => {
 
     useEffect(() => {
         AsyncStorage.getItem('userUsagePref').then((value) => {
-            console.log('userUsagePref', value)
+            // console.log('userUsagePref', value)
             if(value === 'offline'){
                 setUser(GUEST_USER)
                 setAuthState('guest')
                 setInitializing(false)
                 return
             }
-            // if(value === 'online'){
-            //     setUser(null)
-            //     setAuthState('authenticated')
-            //     setInitializing(false)
-            //     return
-            // }
         })
         const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
         return subscriber;

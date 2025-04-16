@@ -5,7 +5,7 @@ import {
   DrawerNavigationProp,
 } from '@react-navigation/drawer'
 import { View, Text, TouchableOpacity, Image, Switch } from 'react-native'
-import { Ionicons, MaterialIcons } from '@expo/vector-icons'
+import { MaterialIcons } from '@expo/vector-icons'
 import { useColorScheme } from 'nativewind'
 import { useNavigation } from '@react-navigation/native'
 import { getDrawerColors } from 'utils/colors'

@@ -7,6 +7,7 @@ import { ensureBaseNotesFolder } from "utils/offlineDirectory/createDoraraFolder
 import { setUserUsagePref } from "utils/extra";
 import { useNavigation } from "@react-navigation/native";
 import { GUEST_USER, useUserStore } from "store/userStore";
+import { offlineFlow } from "utils/offlineFlow";
 
 export default function OnboardingFirst() {
     // const navigation = useNavigation()
@@ -122,10 +123,7 @@ export default function OnboardingFirst() {
                         className="bg-[#f3a49d] rounded-xl px-6 py-4 mb-4"
                         activeOpacity={0.8}
                         onPress={() => {
-                            setUserUsagePref('offline')
-                            ensureBaseNotesFolder();
-                            setUser(GUEST_USER)
-                            setAuthState('guest')
+                            offlineFlow(setAuthState, setUser)
                         }}
                     >
                         <Typo color="#000" className="text-white text-lg text-center font-bold">

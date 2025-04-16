@@ -3,18 +3,18 @@ import auth from '@react-native-firebase/auth';
 import { AuthState } from 'store/userStore';
 
 export const signInWithGoogle = async () => {
-    GoogleSignin.configure({
+  GoogleSignin.configure({
         webClientId: '535655252637-o2n053di91s2rco5h23cdubo9qvndcga.apps.googleusercontent.com',
-        scopes: ["https://www.googleapis.com/auth/drive"],
+        scopes: ["https://www.googleapis.com/auth/drive.file"],
         offlineAccess: true,
       });
-  console.log('signInWithGoogle');
+  // console.log('signInWithGoogle');
   try {
     await GoogleSignin.hasPlayServices();
     const response = await GoogleSignin.signIn();
 
     if (isSuccessResponse(response)) {
-      console.log('response', response.data);
+      // console.log('response', response.data);
       const idToken = response.data.idToken;
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       // setAuthState('authenticated');
@@ -40,7 +40,7 @@ export const googleSignOut = async () => {
 export const getAndSetAcessToken = async (setAccessToken: (accessToken: string) => void) => {
     try {
         const { accessToken } = await GoogleSignin.getTokens();
-        console.log('accessToken', accessToken);
+        // console.log('accessToken', accessToken);
         if(accessToken){
           setAccessToken(accessToken);
           return accessToken;

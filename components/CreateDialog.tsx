@@ -8,9 +8,12 @@ interface CreateDialogProps {
     onClose: () => void;
     onSubmit: (name: string) => void;
     type: 'file' | 'folder';
+    label: string;
+    placeholder: string;
+    success: string;
 }
 
-export const CreateDialog = ({ visible, onClose, onSubmit, type }: CreateDialogProps) => {
+export const CreateDialog = ({ visible, onClose, onSubmit, type, label, placeholder, success }: CreateDialogProps) => {
     const { colorScheme } = useColorScheme();
     const [name, setName] = useState('');
 
@@ -37,13 +40,13 @@ export const CreateDialog = ({ visible, onClose, onSubmit, type }: CreateDialogP
                     }}
                 >
                     <Typo className="text-xl font-semibold mb-4">
-                        Create New {type.charAt(0).toUpperCase() + type.slice(1)}
+                        {label}
                     </Typo>
                     
                     <TextInput
                         value={name}
                         onChangeText={setName}
-                        placeholder={`Enter ${type} name`}
+                        placeholder={placeholder}
                         className="border border-gray-300 dark:border-gray-700 rounded-lg p-2 mb-4"
                         placeholderTextColor={colorScheme === "dark" ? "#666" : "#999"}
                         style={{ 
@@ -64,7 +67,7 @@ export const CreateDialog = ({ visible, onClose, onSubmit, type }: CreateDialogP
                             onPress={handleSubmit}
                             className="bg-[#f3a49d] px-4 py-2 rounded-lg"
                         >
-                            <Typo className="text-white">Create</Typo>
+                            <Typo className="text-white">{success}</Typo>
                         </TouchableOpacity>
                     </View>
                 </View>

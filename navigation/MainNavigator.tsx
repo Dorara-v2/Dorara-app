@@ -3,10 +3,21 @@ import DrawerNavigator from './DrawerNavigator';
 import SettingsScreen from 'screens/Settings';
 import { TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import NoteEditor from 'screens/NoteEditor';
 
-const Stack = createStackNavigator();
+
+export type MainStackParamList = {
+  Drawer: undefined;
+  Settings: undefined;
+  NoteEditor: {
+    filename: string;
+    content: string;
+    path: string
+  }
+}
+const Stack = createStackNavigator<MainStackParamList>();
+
 
 export default function MainNavigator() {
   

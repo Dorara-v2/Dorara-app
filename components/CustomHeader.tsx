@@ -1,6 +1,6 @@
 
 import { View, TextInput, TouchableOpacity, Text, Platform, StatusBar } from 'react-native'
-import { Ionicons, MaterialIcons } from '@expo/vector-icons'
+import { MaterialIcons } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import { DrawerNavigationProp } from '@react-navigation/drawer'
 import { useGlobalSearchStore } from 'store/globalSearchStore'

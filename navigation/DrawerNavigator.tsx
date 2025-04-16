@@ -4,7 +4,7 @@ import CustomDrawer from "components/CustomDrawer";
 import CustomHeader from "components/CustomHeader";
 import { useColorScheme } from "nativewind";
 import HomeScreen from "screens/HomeScreen";
-import NotesScreen from "screens/Notes";
+import NotesScreen from "screens/NotesScreen";
 import { getDrawerColors } from "utils/colors";
 
 
