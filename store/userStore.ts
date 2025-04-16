@@ -1,6 +1,8 @@
 
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { Image } from "react-native";
+import { deleteDoraraFolderId } from "utils/driveDirectory/findOrCreateDoraraFolder";
+import { deleteAcessToken } from "utils/driveTokenManager";
 import { deleteUserUsagePref, setUserUsagePref } from "utils/extra";
 import { googleSignOut } from "utils/googleOauth";
 import { create } from "zustand";
@@ -30,8 +32,10 @@ export const useUserStore = create<UserStore>((set) => ({
     user: null,
     setUser: (user) => set({ user }),
     signOut: async () => {
-        googleSignOut()
-        deleteUserUsagePref()
+        await googleSignOut()
+        await deleteUserUsagePref()
+        await deleteDoraraFolderId()
+        await deleteAcessToken()
         set({ authState: 'unauthenticated' });
         set({ user: null });
     }

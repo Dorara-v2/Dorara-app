@@ -8,6 +8,7 @@ import { setUserUsagePref } from "utils/extra";
 import { useNavigation } from "@react-navigation/native";
 import { GUEST_USER, useUserStore } from "store/userStore";
 import { offlineFlow } from "utils/offlineFlow";
+import { onlineFlow } from "utils/onlineFlow";
 
 export default function OnboardingFirst() {
     // const navigation = useNavigation()
@@ -138,9 +139,7 @@ export default function OnboardingFirst() {
                         activeOpacity={0.8}
                         className="flex flex-row justify-between items-center rounded-xl px-24 py-4"
                         onPress={async () => {
-                            signInWithGoogle();
-                            setUserUsagePref('online')
-                            ensureBaseNotesFolder();
+                            onlineFlow()
                         }}
                     >
                         <Typo color="#000" className="text-lg text-center font-bold">

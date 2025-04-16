@@ -1,5 +1,5 @@
 import { GoogleSignin, isSuccessResponse } from '@react-native-google-signin/google-signin';
-import auth from '@react-native-firebase/auth';
+import auth, { firebase } from '@react-native-firebase/auth';
 import { AuthState } from 'store/userStore';
 
 export const signInWithGoogle = async () => {
@@ -37,16 +37,4 @@ export const googleSignOut = async () => {
     }
 }
 
-export const getAndSetAcessToken = async (setAccessToken: (accessToken: string) => void) => {
-    try {
-        const { accessToken } = await GoogleSignin.getTokens();
-        // console.log('accessToken', accessToken);
-        if(accessToken){
-          setAccessToken(accessToken);
-          return accessToken;
-        }
-        return null
-    } catch (error) {
-        console.log('error', error);
-    }
-}
+
