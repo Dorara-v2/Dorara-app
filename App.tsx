@@ -8,6 +8,8 @@ import { useEffect } from 'react';
 import { PressStart2P_400Regular } from "@expo-google-fonts/press-start-2p"
 import { DMSans_400Regular } from "@expo-google-fonts/dm-sans"
 import { useFonts } from 'expo-font';
+import { initDB } from 'sqlite/init';
+import { SQLiteProvider } from 'expo-sqlite';
 
 
 
@@ -33,6 +35,7 @@ export default function App() {
       console.error('Error getting color scheme:', error);
     }
   }
+  initDB()
   getColorScheme()
   // colorScheme.set('light')
 }, [])
@@ -41,7 +44,9 @@ if (!loaded) {
 }
   return (
     <>
+    <SQLiteProvider databaseName='Dorara.db' onInit={initDB}>
     <RootNavigator />
+    </SQLiteProvider>
   </>
   );
 }

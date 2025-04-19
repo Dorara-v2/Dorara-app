@@ -8,11 +8,16 @@ import { useUserStore } from 'store/userStore';
 import { signInWithGoogle } from 'utils/googleOauth';
 import { onlineFlow } from 'utils/onlineFlow';
 import auth from '@react-native-firebase/auth';
+import { useSQLiteContext } from 'expo-sqlite';
+import { useEffect } from 'react';
 export default function HomeScreen() {
   const { setLoading, setContent } = useLoadingStore();
   const { user, signOut } = useUserStore();
   const navigation = useNavigation<NavigationProp<MainStackParamList>>();
   // console.log(auth().currentUser);
+  const db = useSQLiteContext();
+
+  
   return (
     <ScreenContent>
       <TouchableOpacity
