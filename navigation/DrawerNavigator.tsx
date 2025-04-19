@@ -7,6 +7,7 @@ import { useColorScheme } from "nativewind";
 import HomeScreen from "screens/HomeScreen";
 import NotesScreen from "screens/NotesScreen";
 import { getDrawerColors } from "utils/colors";
+import { TaskTodoNavigation } from "./TaskTodoNavigation";
 
 
 
@@ -38,7 +39,7 @@ export default function DrawerNavigator() {
             ),
         }}
       />
-      <Drawer.Screen name="Todo/Tasks" component={HomeScreen} 
+      <Drawer.Screen name="Todo/Tasks" component={TaskTodoNavigation} 
         options={{
             drawerIcon: ({ color }) => (
                 <MaterialIcon name="checklist" size={30} color={color} />

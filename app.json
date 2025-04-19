@@ -13,6 +13,7 @@
     },
     "plugins": [
       ["@react-native-google-signin/google-signin"],
+      ["@react-native-firebase/app"],
       [
         "expo-dev-launcher",
         {

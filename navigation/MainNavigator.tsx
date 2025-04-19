@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import NoteEditor from 'screens/NoteEditor';
 import { MaterialIcon } from 'components/MaterialIcon';
+import TermsOfServiceScreen from 'screens/TermsOfService';
 
 
 export type MainStackParamList = {
@@ -16,6 +17,7 @@ export type MainStackParamList = {
     content: string;
     path: string
   }
+  TermsOfServices: undefined
 }
 const Stack = createStackNavigator<MainStackParamList>();
 
@@ -30,20 +32,7 @@ export default function MainNavigator() {
         name="Settings"
         component={SettingsScreen}
         options={{
-          headerShown: true,
-          title: 'Settings',
-          headerTitleAlign: 'center',
-          headerLeft: () => {
-            const navigation = useNavigation();
-            return (
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.goBack();
-                }}>
-                <MaterialIcon name="arrow-back" size={24}/>
-              </TouchableOpacity>
-            );
-          },
+          headerShown: false,
         }}
       />
       <Stack.Screen
@@ -56,6 +45,14 @@ export default function MainNavigator() {
           
         }}
         />
+        <Stack.Screen
+          name='TermsOfServices'
+          component={TermsOfServiceScreen}
+          options={{
+            headerShown: true,
+            title: 'Terms of Service',
+          }}
+          />
     </Stack.Navigator>
   );
 }

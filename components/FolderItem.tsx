@@ -9,6 +9,7 @@ import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';
 import { CreateDialog } from './CreateDialog';
 import { DeleteDialog } from './DeleteDialog';
+import { MaterialIcon } from './MaterialIcon';
 
 type FolderItemProps = {
   file: { name: string; isDirectory: boolean };
@@ -90,7 +91,7 @@ export const FolderItem = ({
         onLongPress={handleLongPress}
         className="mb-2 flex-row items-center rounded-lg p-4"
       >
-        <MaterialIcons
+        <MaterialIcon
           name={file.isDirectory ? 'folder' : 'file-copy'}
           size={30}
           color={file.isDirectory ? '#f3a49d' : '#b3afaf'}
@@ -117,7 +118,7 @@ export const FolderItem = ({
               setMenuVisible(false);
             }}
           >
-            <MaterialIcons name="edit" size={24} color="#f3a49d" />
+            <MaterialIcon name="edit" size={24} color="#f3a49d" />
             <Typo className="ml-2">Rename</Typo>
           </TouchableOpacity>
 
@@ -130,7 +131,7 @@ export const FolderItem = ({
               setMenuVisible(false);
             }}
           >
-            <MaterialIcons name="delete" size={24} color="#f3a49d" />
+            <MaterialIcon name="delete" size={24} color="#f3a49d" />
             <Typo className="ml-2">Delete</Typo>
           </TouchableOpacity>
 
@@ -140,7 +141,7 @@ export const FolderItem = ({
             className="flex-row items-center p-3"
             onPress={() => setMenuVisible(false)}
           >
-            <MaterialIcons name="close" size={24} color="#f3a49d" />
+            <MaterialIcon name="close" size={24} color="#f3a49d" />
             <Typo className="ml-2">Cancel</Typo>
           </TouchableOpacity>
         </View>

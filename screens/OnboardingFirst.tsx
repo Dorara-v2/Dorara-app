@@ -1,23 +1,16 @@
+import { useEffect, useRef } from "react";
+import { Animated, Image, TouchableOpacity, View } from "react-native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import ScreenContent from "components/ScreenContent";
 import { Typo } from "components/Typo";
-import { Image, TouchableOpacity, View, Animated } from "react-native";
-import { useEffect, useRef } from "react";
-import { signInWithGoogle } from "utils/googleOauth";
-import { ensureBaseNotesFolder } from "utils/offlineDirectory/createDoraraFolder";
-import { setUserUsagePref } from "utils/extra";
-import { useNavigation } from "@react-navigation/native";
-import { GUEST_USER, useUserStore } from "store/userStore";
-import { offlineFlow } from "utils/offlineFlow";
-import { onlineFlow } from "utils/onlineFlow";
+import { OnboardingStackParamList } from "navigation/OnboardingNavigator";
 
 export default function OnboardingFirst() {
-    // const navigation = useNavigation()
-    const { setAuthState, setUser } = useUserStore()
+    const navigation = useNavigation<NavigationProp<OnboardingStackParamList>>();
     const imageAnim = useRef(new Animated.Value(0)).current;
     const titleAnim = useRef(new Animated.Value(0)).current;
     const descAnim = useRef(new Animated.Value(0)).current;
     const buttonAnim = useRef(new Animated.Value(0)).current;
-
 
     useEffect(() => {
         Animated.sequence([
@@ -77,12 +70,11 @@ export default function OnboardingFirst() {
                         }}
                     >
                         <Typo className="text-4xl font-bold text-center">
-                            Welcome to{" "}
+                        Welcome to{" "}
                             <Typo color="#f3a49d" className="text-5xl font-extrabold">
                                 Dorara
                             </Typo>
                         </Typo>
-                        
                         
                         <Animated.View
                             style={{
@@ -117,35 +109,14 @@ export default function OnboardingFirst() {
                         }]
                     }}
                 >
-                    <Typo className="text-2xl font-bold text-center mb-8">
-                        Choose how you want to start
-                    </Typo>
                     <TouchableOpacity 
-                        className="bg-[#f3a49d] rounded-xl px-6 py-4 mb-4"
+                        className="bg-[#f3a49d] rounded-xl px-6 py-4"
                         activeOpacity={0.8}
-                        onPress={() => {
-                            offlineFlow(setAuthState, setUser)
-                        }}
+                        onPress={() => navigation.navigate('OnboardingSecond')}
                     >
-                        <Typo color="#000" className="text-white text-lg text-center font-bold">
-                            Continue Offline
+                        <Typo className="text-white text-lg text-center font-bold">
+                            Get Started
                         </Typo>
-                    </TouchableOpacity>
-                    <View className="h-[1px] w-full bg-[#b3afaf] rounded-full mb-4" />
-                    <TouchableOpacity
-                        style={{
-                            backgroundColor: "#b3afaf",
-                        }}
-                        activeOpacity={0.8}
-                        className="flex flex-row justify-between items-center rounded-xl px-24 py-4"
-                        onPress={async () => {
-                            onlineFlow()
-                        }}
-                    >
-                        <Typo color="#000" className="text-lg text-center font-bold">
-                            Login with Google
-                        </Typo>
-                        <Image source={require('../assets/googleIcon.png')} className="w-8 h-8" />
                     </TouchableOpacity>
                 </Animated.View>
             </View>

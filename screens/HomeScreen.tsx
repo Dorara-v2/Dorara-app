@@ -1,13 +1,18 @@
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import ScreenContent from 'components/ScreenContent';
 import { Typo } from 'components/Typo';
+import { MainStackParamList } from 'navigation/MainNavigator';
 import { Image, TouchableOpacity } from 'react-native';
 import { useLoadingStore } from 'store/loadingStore';
 import { useUserStore } from 'store/userStore';
 import { signInWithGoogle } from 'utils/googleOauth';
-
+import { onlineFlow } from 'utils/onlineFlow';
+import auth from '@react-native-firebase/auth';
 export default function HomeScreen() {
   const { setLoading, setContent } = useLoadingStore();
   const { user, signOut } = useUserStore();
+  const navigation = useNavigation<NavigationProp<MainStackParamList>>();
+  // console.log(auth().currentUser);
   return (
     <ScreenContent>
       <TouchableOpacity
@@ -28,10 +33,17 @@ export default function HomeScreen() {
         </Typo>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={signInWithGoogle}
+        onPress={onlineFlow}
         className="mb-4 rounded-xl bg-[#f3a49d] px-6 py-4">
         <Typo color="#000" className="text-center text-lg font-bold text-white">
           Sign in
+        </Typo>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('TermsOfServices')}
+        className="mb-4 rounded-xl bg-[#f3a49d] px-6 py-4">
+        <Typo color="#000" className="text-center text-lg font-bold text-white">
+          Terms of services
         </Typo>
       </TouchableOpacity>
     </ScreenContent>

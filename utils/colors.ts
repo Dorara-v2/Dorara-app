@@ -16,6 +16,10 @@ export const getCustomHeaderColors = (colorScheme: ColorScheme) => ({
 
 export const getTodoScreenColors = (colorScheme: ColorScheme) => ({
     bg: colorScheme === 'light' ? "#F5F5F5" : "#171717",
+    tabBarBg: colorScheme === 'light' ? "#F5F5F5" : "#212121",
     text: colorScheme === 'light' ? "#383b39" : "#ffffff",
     icon: colorScheme === 'light' ? "#383b39" : "#ffffff",
+    tabActiveTint: colorScheme === 'light' ? "#ba4c48": "#f3a49d",
+    tabInactiveTint: colorScheme === 'light' ? "#383b39" : "#ffffff",
+    tabBarBorderColor: colorScheme === "light" ? "#ba4c48": "#f3a49d",
 })

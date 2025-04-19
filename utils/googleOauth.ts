@@ -1,6 +1,7 @@
 import { GoogleSignin, isSuccessResponse } from '@react-native-google-signin/google-signin';
 import auth, { firebase } from '@react-native-firebase/auth';
 import { AuthState } from 'store/userStore';
+import { createUserDocument } from 'firebase/createUserDocument';
 
 export const signInWithGoogle = async () => {
   GoogleSignin.configure({
@@ -12,12 +13,13 @@ export const signInWithGoogle = async () => {
   try {
     await GoogleSignin.hasPlayServices();
     const response = await GoogleSignin.signIn();
-
+    // console.log('response', response);
     if (isSuccessResponse(response)) {
       // console.log('response', response.data);
       const idToken = response.data.idToken;
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      // setAuthState('authenticated');
+      const userCredential = await auth().signInWithCredential(googleCredential);
+      await createUserDocument(userCredential.user);
       return auth().signInWithCredential(googleCredential);
     }
   } catch (error) {
