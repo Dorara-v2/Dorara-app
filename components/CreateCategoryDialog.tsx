@@ -8,7 +8,6 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useTodoStore } from 'store/todoStore';
 
 interface CreateCategoryDialogProps {
-    visible: boolean;
     onClose: () => void;
 }
 
@@ -19,7 +18,7 @@ const AVAILABLE_ICONS = [
     'brush', 'music-note', 'directions-car', 'book'
 ];
 
-export const CreateCategoryDialog = ({ visible, onClose }: CreateCategoryDialogProps) => {
+export const CreateCategoryDialog = ({ onClose }: CreateCategoryDialogProps) => {
     const [categoryName, setCategoryName] = useState('');
     const [selectedIcon, setSelectedIcon] = useState(AVAILABLE_ICONS[0]);
     const { colorScheme } = useColorScheme();
@@ -29,6 +28,11 @@ export const CreateCategoryDialog = ({ visible, onClose }: CreateCategoryDialogP
 
     const createCategoryInDb = async () => {
         try {
+            if(categoryName.trim() === '') return
+            if(category.some((cat) => cat.name?.toLowerCase() === categoryName.toLowerCase())) {
+                ToastAndroid.show('Category already exists', ToastAndroid.SHORT);
+                return;
+            }
             await db.runAsync(`INSERT INTO categories (id, name, icon) VALUES (?, ?, ?)`, [categoryName.toLowerCase() ,categoryName, selectedIcon]);
             setCategory([...category, { id: categoryName.toLowerCase(), name: categoryName, icon: selectedIcon }])
             ToastAndroid.show('Category created successfully', ToastAndroid.SHORT);
@@ -38,12 +42,7 @@ export const CreateCategoryDialog = ({ visible, onClose }: CreateCategoryDialogP
         onClose()
     }
     return (
-        <Modal
-            visible={visible}
-            transparent
-            animationType="fade"
-            onRequestClose={onClose}
-        >
+        
             <View className="flex-1 justify-center items-center bg-black/50">
                 <View className="w-[90%] max-w-md bg-white dark:bg-[#1f1f1f] rounded-2xl p-4">
                     <Typo className="text-xl font-bold mb-4">Create Category</Typo>
@@ -52,7 +51,8 @@ export const CreateCategoryDialog = ({ visible, onClose }: CreateCategoryDialogP
                     <TextInput
                         className="rounded-lg px-4 py-3 mb-4"
                         style={{
-                            backgroundColor: colors.bg
+                            backgroundColor: colors.bg,
+                            color: colors.text
                         }}
                         placeholder="Category Name"
                         placeholderTextColor="#666"
@@ -109,6 +109,5 @@ export const CreateCategoryDialog = ({ visible, onClose }: CreateCategoryDialogP
                     </View>
                 </View>
             </View>
-        </Modal>
     );
 };

@@ -56,7 +56,9 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#f3a49d"
       },
-      "package": "com.calc.dorara"
+      "package": "com.calc.dorara",
+      "enableDangerousExperimentalLeanBuilds": true
+
     },
     "extra": {
       "eas": {

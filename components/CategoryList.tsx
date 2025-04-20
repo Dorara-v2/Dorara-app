@@ -1,4 +1,4 @@
-import { FlatList, TouchableOpacity, View } from "react-native";
+import { FlatList, Modal, TouchableOpacity, View } from "react-native";
 import { Category } from "utils/types";
 import { MaterialIcon } from "./MaterialIcon";
 import { Typo } from "./Typo";
@@ -14,9 +14,10 @@ import { useTodoStore } from "store/todoStore";
 type Props = {
     selectedCategory: Category;
     setSelectedCategory: (category: Category) => void;
+    mode: 'create' | 'display'
 }
 
-export const CategoryList = ({ selectedCategory, setSelectedCategory }: Props) => {
+export const CategoryList = ({ selectedCategory, setSelectedCategory, mode }: Props) => {
     // const categories: Category[] = [
     //     // { id: 'all', name: 'All', icon: 'checklist' },
     //     { id: 'work', name: 'Work', icon: 'work' },
@@ -38,7 +39,7 @@ export const CategoryList = ({ selectedCategory, setSelectedCategory }: Props) =
             horizontal
             showsHorizontalScrollIndicator={false}
             data={categories}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id as string}
             ListHeaderComponent={() => (
                 <View className="flex flex-row">
                 <TouchableOpacity
@@ -54,23 +55,44 @@ export const CategoryList = ({ selectedCategory, setSelectedCategory }: Props) =
                       color='#f3a49d'
                     />
                   </TouchableOpacity>
-                  <TouchableOpacity
-                      onPress={() => setSelectedCategory({ id: 'all', name: 'All', icon: 'checklist' })}
-                      className={`mr-2 h-10 flex-row items-center rounded-full px-4`}
-                      style={{
-                        backgroundColor: selectedCategory.id === 'all' ? colors.categoryActiveTint : colors.categoryBg
-                      }}
-                      >
-                      <MaterialIcon
-                        name="checklist"
-                        size={20}
-                        color={colors.categoryIcon}
-                      />
-                      <Typo
-                        className={`ml-2`}>
-                        All
-                      </Typo>
-                    </TouchableOpacity>
+                  {mode === 'display' && (
+                    <TouchableOpacity
+                    onPress={() => setSelectedCategory({ id: 'all', name: 'All', icon: 'checklist' })}
+                    className={`mr-2 h-10 flex-row items-center rounded-full px-4`}
+                    style={{
+                      backgroundColor: selectedCategory.id === 'all' ? colors.categoryActiveTint : colors.categoryBg
+                    }}
+                    >
+                    <MaterialIcon
+                      name="checklist"
+                      size={20}
+                      color={colors.categoryIcon}
+                    />
+                    <Typo
+                      className={`ml-2`}>
+                      All
+                    </Typo>
+                  </TouchableOpacity>
+                  )}
+                  {mode === 'create' && (
+                    <TouchableOpacity
+                    onPress={() => setSelectedCategory({id: undefined, name: 'none', icon: 'filter-none'})}
+                    className={`mr-2 h-10 flex-row items-center rounded-full px-4`}
+                    style={{
+                      backgroundColor: selectedCategory.name === 'none' ? colors.categoryActiveTint : colors.categoryBg
+                    }}
+                    >
+                    <MaterialIcon
+                      name="filter-none"
+                      size={20}
+                      color={colors.categoryIcon}
+                    />
+                    <Typo
+                      className={`ml-2`}>
+                      None
+                    </Typo>
+                  </TouchableOpacity>
+    )}
                   </View>
             )}
             renderItem={({ item }) => (
@@ -96,10 +118,16 @@ export const CategoryList = ({ selectedCategory, setSelectedCategory }: Props) =
             )}
             // contentContainerStyle={{ paddingHorizontal: 16 }}
             />
-            <CreateCategoryDialog
-                visible={isNewCategoryDialogVisible}
-                onClose={() => setIsNewCategoryDialogVisible(false)}
+            <Modal
+            visible={isNewCategoryDialogVisible}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setIsNewCategoryDialogVisible(false)}
+        >
+          <CreateCategoryDialog
+            onClose={() => setIsNewCategoryDialogVisible(false)}
             />
+        </Modal>
             </>
     );
 };

@@ -12,6 +12,7 @@ export const initDB = async () => {
             date INTEGER,
             isCompleted INTEGER DEFAULT 0,
             categoryId TEXT,
+            time INTEGER,
             updatedAt INTEGER
         );
         CREATE TABLE IF NOT EXISTS categories (

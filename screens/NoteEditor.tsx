@@ -108,7 +108,7 @@ export default function NoteEditor() {
             )}
 
             <TextInput multiline onChangeText={setNoteContent}>
-                <Text>{noteContent}</Text>
+                <Typo>{noteContent}</Typo>
             </TextInput>
         </ScreenContent>
     );
