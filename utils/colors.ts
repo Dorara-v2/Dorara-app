@@ -22,4 +22,8 @@ export const getTodoScreenColors = (colorScheme: ColorScheme) => ({
     tabActiveTint: colorScheme === 'light' ? "#ba4c48": "#f3a49d",
     tabInactiveTint: colorScheme === 'light' ? "#383b39" : "#ffffff",
     tabBarBorderColor: colorScheme === "light" ? "#ba4c48": "#f3a49d",
+    categoryBg: colorScheme === 'light' ? "#F5F5F5" : "#212121",
+    categoryText: colorScheme === 'light' ? "#383b39" : "#ffffff",
+    categoryIcon: colorScheme === 'light' ? "#383b39" : "#ffffff",
+    categoryActiveTint: colorScheme === 'light' ? "#f3a49d": "#f3a49d", 
 })

@@ -8,6 +8,11 @@ import HomeScreen from "screens/HomeScreen";
 import NotesScreen from "screens/NotesScreen";
 import { getDrawerColors } from "utils/colors";
 import { TaskTodoNavigation } from "./TaskTodoNavigation";
+import { useEffect } from "react";
+import { loadTodo } from "./MainNavigator";
+import { useSQLiteContext } from "expo-sqlite";
+import { useTodoStore } from "store/todoStore";
+import { Category, Todo } from "utils/types";
 
 
 
@@ -17,6 +22,19 @@ const Drawer = createDrawerNavigator();
 export default function DrawerNavigator() {
     const { colorScheme } = useColorScheme()
     const Colors = getDrawerColors(colorScheme)
+    const db = useSQLiteContext();
+    const { setTodo, setCategory } = useTodoStore();
+    const loadTodo = async () => {
+      console.log('loadtodo')
+      const todos: Todo[] = await db.getAllAsync('SELECT * FROM todos');
+      const categories: Category[] = await db.getAllAsync('SELECT * FROM categories');
+      console.log(todos, categories);
+      setTodo(todos);
+      setCategory(categories);
+    }
+    useEffect(() => {
+        loadTodo()
+    },[db])
   return (
     <Drawer.Navigator
         screenOptions={{

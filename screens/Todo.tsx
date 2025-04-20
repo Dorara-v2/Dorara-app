@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { 
-    View, 
-    TouchableOpacity, 
-    ScrollView, 
-    Animated, 
-    Modal, 
-    TextInput, 
-    KeyboardAvoidingView, 
-    Platform,
-    TouchableWithoutFeedback,
-    Keyboard 
+import {
+  View,
+  TouchableOpacity,
+  ScrollView,
+  Animated,
+  Modal,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+  FlatList,
 } from 'react-native';
 import { MaterialIcon } from 'components/MaterialIcon';
 import ScreenContent from 'components/ScreenContent';
@@ -18,6 +19,8 @@ import { format } from 'date-fns';
 import { useColorScheme } from 'nativewind';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { CreateTodoModal } from 'components/CreateTodoModal';
+import { CategoryList } from 'components/CategoryList';
+import { Category } from 'utils/types';
 
 interface TodoItem {
   id: string;
@@ -27,19 +30,19 @@ interface TodoItem {
   date: Date;
 }
 
-interface Category {
-  id: 'all' | 'personal' | 'work' | 'shopping' | 'health';
-  label: string;
-  icon: string;
-}
+// interface Category {
+//   id: 'all' | 'personal' | 'work' | 'shopping' | 'health';
+//   label: string;
+//   icon: string;
+// }
 
-const categories: Category[] = [
-  { id: 'all', label: 'All', icon: 'list' },
-  { id: 'personal', label: 'Personal', icon: 'person' },
-  { id: 'work', label: 'Work', icon: 'work' },
-  { id: 'shopping', label: 'Shopping', icon: 'shopping-cart' },
-  { id: 'health', label: 'Health', icon: 'favorite' },
-];
+// const categories: Category[] = [
+//   { id: 'all', label: 'All', icon: 'list' },
+//   { id: 'personal', label: 'Personal', icon: 'person' },
+//   { id: 'work', label: 'Work', icon: 'work' },
+//   { id: 'shopping', label: 'Shopping', icon: 'shopping-cart' },
+//   { id: 'health', label: 'Health', icon: 'favorite' },
+// ];
 
 const mockTodos: TodoItem[] = [
   {
@@ -142,9 +145,30 @@ const groupTodosByDate = (todos: TodoItem[], selectedCategory: Category['id']) =
   return sortedGroups;
 };
 
+const AddCategoryButton = () => (
+  <TouchableOpacity
+    onPress={() => console.log('Add Category')}
+    className={`mr-2 bg-gray-100 dark:bg-gray-800 h-10 flex-row items-center rounded-full px-4`}>
+    <MaterialIcon
+      name="add"
+      size={20}
+      color='#f3a49d'
+    />
+    <Typo
+      className={`ml-2`}>
+      new
+    </Typo>
+  </TouchableOpacity>
+);
+
 export const TodoScreen = () => {
   const [todos, setTodos] = useState<TodoItem[]>(mockTodos);
-  const [selectedCategory, setSelectedCategory] = useState<Category['id']>('all');
+  const [selectedCategory, setSelectedCategory] = useState<Category>({
+    id: 'all',
+    name: 'All',
+    icon: 'checklist',
+    color: '#f3a49d',
+  });
   const [isPreviousExpanded, setIsPreviousExpanded] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
@@ -157,7 +181,7 @@ export const TodoScreen = () => {
   });
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const menuAnimation = useState(new Animated.Value(0))[0];
-  const groupedTodos = groupTodosByDate(todos, selectedCategory);
+  const groupedTodos = groupTodosByDate(todos, selectedCategory.id);
   const { colorScheme } = useColorScheme();
 
   const toggleTodo = (id: string) => {
@@ -169,8 +193,8 @@ export const TodoScreen = () => {
   const toggleMenu = () => {
     const toValue = isMenuOpen ? 0 : 1;
     Animated.spring(menuAnimation, {
-        toValue,
-        useNativeDriver: true,
+      toValue,
+      useNativeDriver: true,
     }).start();
     setIsMenuOpen(!isMenuOpen);
   };
@@ -232,35 +256,7 @@ export const TodoScreen = () => {
     <ScreenContent>
       {/* Category Filter with fixed height */}
       <View className="h-14">
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          className="flex-grow"
-          contentContainerStyle={{ paddingHorizontal: 16, alignItems: 'center' }}>
-          {categories.map((category) => (
-            <TouchableOpacity
-              key={category.id}
-              onPress={() => setSelectedCategory(category.id)}
-              className={`mr-2 h-10 flex-row items-center rounded-full px-4
-                                ${
-                                  selectedCategory === category.id
-                                    ? 'bg-[#f3a49d]'
-                                    : 'bg-gray-100 dark:bg-gray-800'
-                                }`}>
-              <MaterialIcon
-                name={category.icon}
-                size={20}
-                color={selectedCategory === category.id ? 'white' : '#666'}
-              />
-              <Typo
-                className={`ml-2 ${
-                  selectedCategory === category.id ? 'text-white' : 'text-gray-600'
-                }`}>
-                {category.label}
-              </Typo>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        <CategoryList selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
       </View>
 
       <ScrollView className="flex-1 px-4">
@@ -340,15 +336,12 @@ export const TodoScreen = () => {
         </TouchableOpacity>
       </View>
       <Modal
-                visible={isAddModalVisible}
-                transparent
-                animationType="slide"
-                onRequestClose={() => setIsAddModalVisible(false)}
-            >
-                <CreateTodoModal 
-                    setIsAddModalVisible={setIsAddModalVisible}
-                />
-                </Modal>
+        visible={isAddModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setIsAddModalVisible(false)}>
+        <CreateTodoModal setIsAddModalVisible={setIsAddModalVisible} />
+      </Modal>
     </ScreenContent>
   );
 };

@@ -8,6 +8,7 @@ import { useState } from "react";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Category, Todo } from "utils/types";
 import uuid from "react-native-uuid"
+import { CategoryList } from "./CategoryList";
 type Props = {
     setIsAddModalVisible: (visible: boolean) => void;
 }
@@ -31,6 +32,11 @@ export const CreateTodoModal = ({setIsAddModalVisible}: Props) => {
         categoryId: undefined,
         updatedAt: Date.now(),
     })
+    const [category, setCategory] = useState<Category>({
+        id: 'all',
+        name: 'All',
+        icon: 'checklist',
+    });
     console.log(newTodo)
     return (
         
@@ -53,38 +59,19 @@ export const CreateTodoModal = ({setIsAddModalVisible}: Props) => {
                                     />
         
                                     {/* Category Selector */}
-                                    <ScrollView 
-                                        horizontal 
-                                        showsHorizontalScrollIndicator={false}
-                                        className="mb-4"
-                                    >
-                                        {categories.filter(cat => cat.id !== 'all').map((category) => (
-                                            <TouchableOpacity
-                                                key={category.id}
-                                                onPress={() => setNewTodo({ ...newTodo, categoryId: category.id })}
-                                                className={`flex-row items-center rounded-full px-4 py-2 mr-2
-                                                    ${newTodo.categoryId === category.id 
-                                                        ? 'bg-[#f3a49d]' 
-                                                        : 'bg-gray-100 dark:bg-gray-800'}`}
-                                            >
-                                                <MaterialIcon 
-                                                    name={category.icon} 
-                                                    size={20} 
-                                                    color={newTodo.categoryId === category.id ? 'white' : '#666'} 
-                                                />
-                                                <Typo className={`ml-2 ${
-                                                    newTodo.categoryId === category.id ? 'text-white' : 'text-gray-600'
-                                                }`}>
-                                                    {category.name}
-                                                </Typo>
-                                            </TouchableOpacity>
-                                        ))}
-                                    </ScrollView>
+                                    <CategoryList
+                                        selectedCategory={category}
+                                        setSelectedCategory={(category) =>
+                                            {
+                                                 setNewTodo({ ...newTodo, categoryId: category.id })
+                                                 setCategory(category)
+                                            }}
+                                        />
         
                                     {/* Date Selector */}
                                     <TouchableOpacity
                                         onPress={() => setIsDatePickerVisible(true)}
-                                        className="flex-row items-center mb-4 p-2 bg-gray-100 dark:bg-gray-800 rounded-lg"
+                                        className="flex-row items-center mt-4 mb-4 p-2 bg-gray-100 dark:bg-gray-800 rounded-lg"
                                     >
                                         <MaterialIcon name="event" size={24} color="#666" />
                                         <Typo className="ml-2 text-gray-600">

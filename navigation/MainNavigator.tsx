@@ -7,6 +7,10 @@ import { MaterialIcons } from '@expo/vector-icons';
 import NoteEditor from 'screens/NoteEditor';
 import { MaterialIcon } from 'components/MaterialIcon';
 import TermsOfServiceScreen from 'screens/TermsOfService';
+import { useSQLiteContext } from 'expo-sqlite';
+import { useTodoStore } from 'store/todoStore';
+import { Category, Todo } from 'utils/types';
+import { useEffect } from 'react';
 
 
 export type MainStackParamList = {
@@ -23,8 +27,9 @@ const Stack = createStackNavigator<MainStackParamList>();
 
 
 export default function MainNavigator() {
-  
-
+  useEffect(() => {
+    loadTodo();
+  }, [])
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Drawer" component={DrawerNavigator} />
@@ -55,4 +60,16 @@ export default function MainNavigator() {
           />
     </Stack.Navigator>
   );
+}
+
+export const loadTodo = async () => {
+  const db = useSQLiteContext();
+  console.log(db)
+  console.log('loadTodo');
+  const { setTodo, setCategory } = useTodoStore();
+  const todos: Todo[] = await db.getAllAsync('SELECT * FROM todos');
+  const categories: Category[] = await db.getAllAsync('SELECT * FROM categories');
+  console.log(todos, categories);
+  setTodo(todos);
+  setCategory(categories);
 }

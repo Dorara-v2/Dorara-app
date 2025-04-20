@@ -9,15 +9,30 @@ import { signInWithGoogle } from 'utils/googleOauth';
 import { onlineFlow } from 'utils/onlineFlow';
 import auth from '@react-native-firebase/auth';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useTodoStore } from 'store/todoStore';
+import { CategoryList } from 'components/CategoryList';
+import { Category } from 'utils/types';
 export default function HomeScreen() {
   const { setLoading, setContent } = useLoadingStore();
   const { user, signOut } = useUserStore();
   const navigation = useNavigation<NavigationProp<MainStackParamList>>();
   // console.log(auth().currentUser);
   const db = useSQLiteContext();
-
-  
+  const getCats = async () => {
+    // await db.runAsync(`DELETE FROM categories`);
+    // const cats = await db.getAllAsync('SELECT * FROM categories');
+    // console.log(cats);
+  }
+  // getCats()
+  // const {todo, category} = useTodoStore()
+  // console.log(todo, category)
+  const [selectedCategory, setSelectedCategory] = useState<Category>({
+    id: 'all',
+    name: 'All',
+    icon: 'checklist', 
+    color: '#f3a49d'
+  })
   return (
     <ScreenContent>
       <TouchableOpacity
@@ -51,6 +66,7 @@ export default function HomeScreen() {
           Terms of services
         </Typo>
       </TouchableOpacity>
+      <CategoryList selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory}/>
     </ScreenContent>
   );
 }

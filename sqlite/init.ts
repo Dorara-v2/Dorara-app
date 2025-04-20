@@ -1,9 +1,9 @@
 import * as SQLite from 'expo-sqlite';
+import uuid from "react-native-uuid"
 
 
 export const initDB = async () => {
     const db = await SQLite.openDatabaseAsync('Dorara.db')
-    console.log(db)
     await db.execAsync(`
         PRAGMA journal_mode = WAL;
         CREATE TABLE IF NOT EXISTS todos (
