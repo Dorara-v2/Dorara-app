@@ -3,14 +3,16 @@ import { View, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { MaterialIcon } from 'components/MaterialIcon';
 import ScreenContent from 'components/ScreenContent';
 import { Typo } from 'components/Typo';
-import { useColorScheme } from 'nativewind';
 import { CreateTodoModal } from 'components/CreateTodoModal';
 import { CategoryList } from 'components/CategoryList';
 import { Category, Todo } from 'utils/types';
 import { useTodoStore } from 'store/todoStore';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export const TaskScreen = () => {
     const { todo: todos, category } = useTodoStore();
+    const [mode, setMode] = useState<'create' | 'edit'>('create');
+    const [selectedTodo, setSelectedTodo] = useState<Todo | undefined>(undefined);
     const [selectedCategory, setSelectedCategory] = useState<Category>({
         id: 'all',
         name: 'All',
@@ -35,7 +37,13 @@ export const TaskScreen = () => {
                 shadowOpacity: 0.1,
                 shadowRadius: 3,
                 elevation: 3,
-            }}>
+            }}
+            onLongPress={() => {
+                setMode('edit');
+                setSelectedTodo(todo);
+                setIsAddModalVisible(true)
+            }}
+            >
             <TouchableOpacity
                 className={`mr-4 h-6 w-6 items-center justify-center rounded-full border-2
                     ${todo.isCompleted ? 'border-[#f3a49d] bg-[#f3a49d]' : 'border-gray-300'}`}>
@@ -50,7 +58,7 @@ export const TaskScreen = () => {
 
             {todo.categoryId && todo.categoryId !== 'all' && (
                 <MaterialIcon 
-                    name={getCategoryIcon(todo.categoryId)} 
+                    name={getCategoryIcon(todo.categoryId) as keyof typeof MaterialIcons.glyphMap} 
                     size={20} 
                     color="#f3a49d" 
                 />
@@ -78,7 +86,11 @@ export const TaskScreen = () => {
             </ScrollView>
 
             <TouchableOpacity
-                onPress={() => setIsAddModalVisible(true)}
+                onPress={() => {
+                    setMode('create');
+                    setSelectedTodo(undefined);
+                    setIsAddModalVisible(true)
+                }}
                 className="absolute bottom-20 right-10 h-16 w-16 items-center justify-center rounded-full bg-[#f3a49d]"
                 style={{
                     elevation: 8,
@@ -95,7 +107,7 @@ export const TaskScreen = () => {
                 transparent
                 animationType="slide"
                 onRequestClose={() => setIsAddModalVisible(false)}>
-                <CreateTodoModal setIsAddModalVisible={setIsAddModalVisible} />
+                <CreateTodoModal mode={mode} todo={selectedTodo} setIsAddModalVisible={setIsAddModalVisible} />
             </Modal>
         </ScreenContent>
     );

@@ -10,13 +10,15 @@ type Props = {
     todo: Todo;
     toggleTodo: (todo: Todo) => void;
     getCategoryIcon: (categoryId: string) => string | undefined;
+    onLongPressAction: (todo: Todo) => void;
 }
 
-export const TodoItem = ({ todo, toggleTodo, getCategoryIcon }: Props) => {
+export const TodoItem = ({ todo, toggleTodo, getCategoryIcon, onLongPressAction }: Props) => {
     return (
         <TouchableOpacity
                     key={todo.id}
                     onPress={() => toggleTodo(todo)}
+                    onLongPress={() => onLongPressAction(todo)}
                     className={`mb-3 flex-row items-center rounded-xl bg-white p-4 dark:bg-[#1f1f1f]
                         ${todo.isCompleted ? 'opacity-60' : ''}`}
                     style={{

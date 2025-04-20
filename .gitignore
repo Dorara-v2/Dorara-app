@@ -25,3 +25,4 @@ android
 
 .npmrc
 google-services.json
+credentials.json

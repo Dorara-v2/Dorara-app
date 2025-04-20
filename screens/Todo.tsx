@@ -82,6 +82,8 @@ export const TodoScreen = () => {
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const groupedTodos = groupTodosByDate(todo, selectedCategory.id);
   const db = useSQLiteContext();
+  const [mode, setMode] = useState<'create' | 'edit'>('create');
+  const [selectedTodo, setSelectedTodo] = useState<Todo | undefined>(undefined);
 
   const toggleTodo = async (selectedTodo: Todo) => {
     const updatedTodo = { ...selectedTodo, isCompleted: selectedTodo.isCompleted === 1 ? 0 : 1 };
@@ -97,11 +99,16 @@ export const TodoScreen = () => {
     }
   };
 
+  const onLongPress = (todo: Todo) => {
+    setSelectedTodo(todo);
+    setMode('edit');
+    setIsAddModalVisible(true);
+  };
 
   const renderTodoGroup = (date: string, dateTodos: Todo[]) => (
     <View key={date} className="mb-6">
       <Typo className="mb-3 text-lg font-bold text-gray-600">{date}</Typo>
-      {dateTodos.map((Todo) => TodoItem({ todo: Todo, toggleTodo, getCategoryIcon }))}
+      {dateTodos.map((Todo) => TodoItem({ todo: Todo, toggleTodo, getCategoryIcon, onLongPressAction: onLongPress }))}
     </View>
   );
 
@@ -141,7 +148,7 @@ export const TodoScreen = () => {
         transparent
         animationType="slide"
         onRequestClose={() => setIsAddModalVisible(false)}>
-        <CreateTodoModal setIsAddModalVisible={setIsAddModalVisible} />
+        <CreateTodoModal mode={mode} todo={selectedTodo} setIsAddModalVisible={setIsAddModalVisible} />
       </Modal>
     </ScreenContent>
   );
