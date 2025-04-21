@@ -1,11 +1,12 @@
 import { MaterialIcons } from "@expo/vector-icons"
 import { useColorScheme } from "nativewind"
+import { MaterialIconName } from "utils/types"
 
 
 
 type MaterialIconParams = {
     size: number
-    name: keyof typeof MaterialIcons.glyphMap
+    name: MaterialIconName
     color?: string
 }
 

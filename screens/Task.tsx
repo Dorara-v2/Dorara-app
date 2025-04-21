@@ -5,7 +5,7 @@ import ScreenContent from 'components/ScreenContent';
 import { Typo } from 'components/Typo';
 import { CreateTodoModal } from 'components/CreateTodoModal';
 import { CategoryList } from 'components/CategoryList';
-import { Category, Todo } from 'utils/types';
+import { Category, MaterialIconName, Todo } from 'utils/types';
 import { useTodoStore } from 'store/todoStore';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -58,7 +58,7 @@ export const TaskScreen = () => {
 
             {todo.categoryId && todo.categoryId !== 'all' && (
                 <MaterialIcon 
-                    name={getCategoryIcon(todo.categoryId) as keyof typeof MaterialIcons.glyphMap} 
+                    name={getCategoryIcon(todo.categoryId) as MaterialIconName} 
                     size={20} 
                     color="#f3a49d" 
                 />

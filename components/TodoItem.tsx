@@ -1,5 +1,5 @@
 import { TouchableOpacity } from "react-native";
-import { Todo } from "utils/types"
+import { MaterialIconName, Todo } from "utils/types"
 import { MaterialIcon } from "./MaterialIcon";
 import { Typo } from "./Typo";
 import { format } from "date-fns";
@@ -47,7 +47,7 @@ export const TodoItem = ({ todo, toggleTodo, getCategoryIcon, onLongPressAction 
                     </View>
         
                     {todo.categoryId && todo.categoryId !== 'all' && (
-                        <MaterialIcon name={getCategoryIcon(todo.categoryId)} size={20} color="#f3a49d" />
+                        <MaterialIcon name={getCategoryIcon(todo.categoryId) as MaterialIconName} size={20} color="#f3a49d" />
                     )}
                 </TouchableOpacity>
     )

@@ -7,6 +7,7 @@ import { useColorScheme } from 'nativewind';
 import { useUserStore } from 'store/userStore';
 import { MainStackParamList } from 'navigation/MainNavigator';
 import { useState } from 'react';
+import { MaterialIconName } from 'utils/types';
 
 export default function Settings() {
     const navigation = useNavigation<NavigationProp<MainStackParamList>>();
@@ -149,7 +150,7 @@ export default function Settings() {
 
 const SectionTitle = ({ icon, title }: { icon: string; title: string }) => (
     <View className="flex-row items-center mb-2 px-2">
-        <MaterialIcon name={icon} size={18} color="#666" />
+        <MaterialIcon name={icon as MaterialIconName} size={18} color="#666" />
         <Typo className="ml-2 text-sm font-semibold text-gray-500">{title}</Typo>
     </View>
 );
@@ -169,11 +170,11 @@ const SettingItem = ({
 }) => (
     <View className="flex-row items-center justify-between p-4">
         <View className="flex-row items-center">
-            <MaterialIcon name={icon} size={24} color="#f3a49d" />
+            <MaterialIcon name={icon as MaterialIconName} size={24} color="#f3a49d" />
             <Typo className="ml-3">{label}</Typo>
         </View>
         {right || (value && (
-            <Typo style={{ color: valueColor }}>{value}</Typo>
+            <Typo>{value}</Typo>
         ))}
     </View>
 );

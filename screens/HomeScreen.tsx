@@ -66,7 +66,6 @@ export default function HomeScreen() {
           Terms of services
         </Typo>
       </TouchableOpacity>
-      <CategoryList selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory}/>
     </ScreenContent>
   );
 }

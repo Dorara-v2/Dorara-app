@@ -1,5 +1,5 @@
 import { FlatList, Modal, TouchableOpacity, View } from "react-native";
-import { Category } from "utils/types";
+import { Category, MaterialIconName } from "utils/types";
 import { MaterialIcon } from "./MaterialIcon";
 import { Typo } from "./Typo";
 import { useColorScheme } from "nativewind";
@@ -104,7 +104,7 @@ export const CategoryList = ({ selectedCategory, setSelectedCategory, mode }: Pr
                       }}
                     >
                     <MaterialIcon
-                        name={item.icon}
+                        name={item.icon as MaterialIconName}
                         size={20}
                         color={colors.categoryIcon}
                     />

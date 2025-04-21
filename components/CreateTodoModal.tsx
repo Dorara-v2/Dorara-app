@@ -88,10 +88,10 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
           [
             newTodo.id,
             newTodo.name,
-            newTodo.date,
-            newTodo.time,
+            newTodo.date ?? null,
+            newTodo.time ?? null,
             newTodo.isCompleted,
-            newTodo.categoryId,
+            newTodo.categoryId ?? null,
             newTodo.updatedAt,
           ]
         );
@@ -105,12 +105,12 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
                     `,
           [
             newTodo.name,
-            newTodo.date,
-            newTodo.time,
+            newTodo.date ?? null,
+            newTodo.time ?? null,
             newTodo.isCompleted,
-            newTodo.categoryId,
+            newTodo.categoryId ?? null,
             newTodo.updatedAt,
-            selectedTodo?.id,
+            selectedTodo?.id ?? '',
           ]
         );
         const updatedTodos = todo.map((t) => (t.id === selectedTodo?.id ? newTodo : t));

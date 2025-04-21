@@ -1,3 +1,4 @@
+import { MaterialIcons } from "@expo/vector-icons";
 
 
 export interface Todo {
@@ -17,3 +18,5 @@ export interface Category {
     color?: string;
     icon?: string;
 }
+
+export type MaterialIconName = keyof typeof MaterialIcons.glyphMap
