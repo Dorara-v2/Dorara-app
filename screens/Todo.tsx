@@ -10,6 +10,7 @@ import { Category, Todo } from 'utils/types';
 import { useTodoStore } from 'store/todoStore';
 import { useSQLiteContext } from 'expo-sqlite';
 import { TodoItem } from 'components/TodoItem';
+import { NothingHere } from 'components/NothingHere';
 
 const groupTodosByDate = (todos: Todo[], selectedCategory: Category['id']) => {
   const now = new Date();
@@ -114,7 +115,7 @@ export const TodoScreen = () => {
 
   const getCategoryIcon = (categoryId: string) => {
     const categoryItem = category.find((cat) => cat.id === categoryId);
-    return categoryItem ? categoryItem.icon : 'checklist';
+    return categoryItem ? categoryItem.icon : null;
   };
   return (
     <ScreenContent>
@@ -127,7 +128,10 @@ export const TodoScreen = () => {
       </View>
 
       <ScrollView className="flex-1 px-4">
-        {Object.entries(groupedTodos).map(([date, dateTodos]) => renderTodoGroup(date, dateTodos))}
+        {Object.entries(groupedTodos).length > 0 ? 
+        Object.entries(groupedTodos).map(([date, dateTodos]) => renderTodoGroup(date, dateTodos))
+        : <NothingHere />
+      }
       </ScrollView>
 
       <TouchableOpacity

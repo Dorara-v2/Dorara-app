@@ -28,6 +28,8 @@ export const CategoryList = ({ selectedCategory, setSelectedCategory, mode }: Pr
     const { colorScheme } = useColorScheme()
     const colors = getTodoScreenColors(colorScheme)
     const [isNewCategoryDialogVisible, setIsNewCategoryDialogVisible] = useState<boolean>(false)
+    const [categoryMode, setCategoryMode] = useState<'create' | 'edit'>('create')
+    const [selectedEditCategory, setSelectedEditCategory] = useState<Category | undefined>(undefined)
     const handleCreateCategory = (name: string, icon: string) => {
         // Handle category creation
         console.log({ name, icon });
@@ -43,7 +45,12 @@ export const CategoryList = ({ selectedCategory, setSelectedCategory, mode }: Pr
             ListHeaderComponent={() => (
                 <View className="flex flex-row">
                 <TouchableOpacity
-                    onPress={() => setIsNewCategoryDialogVisible(true)}
+                    onPress={() => {
+                      setCategoryMode('create')
+                      setSelectedEditCategory(undefined)
+                      setIsNewCategoryDialogVisible(true);
+
+                    }}
                     className={`mr-2  h-10 flex-row items-center rounded-full px-4`}
                     style={{
                         backgroundColor: colors.categoryBg
@@ -98,6 +105,11 @@ export const CategoryList = ({ selectedCategory, setSelectedCategory, mode }: Pr
             renderItem={({ item }) => (
                 <TouchableOpacity
                     onPress={() => setSelectedCategory(item)}
+                    onLongPress={() => {
+                      setCategoryMode('edit')
+                      setSelectedEditCategory(item)
+                      setIsNewCategoryDialogVisible(true);
+                    }}
                     className={`mr-2  h-10 flex-row items-center rounded-full px-4 ${selectedCategory.id === item.id ? 'bg-[#f3a49d]' : ''}`}
                     style={{
                         backgroundColor: selectedCategory.id === item.id ? colors.categoryActiveTint : colors.categoryBg
@@ -125,7 +137,11 @@ export const CategoryList = ({ selectedCategory, setSelectedCategory, mode }: Pr
             onRequestClose={() => setIsNewCategoryDialogVisible(false)}
         >
           <CreateCategoryDialog
-            onClose={() => setIsNewCategoryDialogVisible(false)}
+            onClose={() => {
+              setIsNewCategoryDialogVisible(false);
+            }}
+            mode={categoryMode}
+            selectedCategory={selectedEditCategory}
             />
         </Modal>
             </>

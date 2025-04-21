@@ -123,7 +123,20 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
     }
   };
 
-  console.log(newTodo);
+  const handleDeleteTodo = async () => {
+    try {
+      if(mode === 'edit' && selectedTodo) {
+      await db.runAsync(`DELETE FROM todos WHERE id = ?`, [selectedTodo?.id]);
+      const updatedTodos = todo.filter((t) => t.id !== selectedTodo?.id);
+      setTodo(updatedTodos);
+      ToastAndroid.show('Todo deleted successfully', ToastAndroid.SHORT);
+      setIsAddModalVisible(false);
+      }
+    } catch (error) {
+      console.log('Error deleting todo in DB:', error);
+    }
+  }
+
   return (
     <TouchableWithoutFeedback onPress={() => setIsAddModalVisible(false)}>
       <View className="flex-1 bg-black/50">
@@ -224,11 +237,20 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
 
               {/* Action Buttons */}
               <View className="flex-row justify-end pt-2">
+                
                 <TouchableOpacity
                   onPress={() => setIsAddModalVisible(false)}
-                  className="mr-2 px-4 py-2">
+                  className="px-4 py-2">
                   <Typo className="text-gray-600">Cancel</Typo>
                 </TouchableOpacity>
+                {mode === 'edit' && selectedTodo && (
+                <TouchableOpacity
+                  onPress={handleDeleteTodo}
+                  className="mr-2 px-4 py-2 bg-red-600 rounded-lg"
+                  >
+                  <Typo >Delete</Typo>
+                  </TouchableOpacity>
+  )}
                 <TouchableOpacity
                   onPress={createOrUpdateTodoInDb}
                   className="rounded-lg bg-[#f3a49d] px-4 py-2">

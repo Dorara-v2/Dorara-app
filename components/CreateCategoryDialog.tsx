@@ -6,11 +6,12 @@ import { useColorScheme } from 'nativewind';
 import { getTodoScreenColors } from 'utils/colors';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useTodoStore } from 'store/todoStore';
-import { MaterialIcons } from '@expo/vector-icons';
-import { MaterialIconName } from 'utils/types';
+import { Category, MaterialIconName } from 'utils/types';
 
 interface CreateCategoryDialogProps {
     onClose: () => void;
+    mode: 'create' | 'edit';
+    selectedCategory? : Category
 }
 
 const AVAILABLE_ICONS = [
@@ -20,9 +21,9 @@ const AVAILABLE_ICONS = [
     'brush', 'music-note', 'directions-car', 'book'
 ];
 
-export const CreateCategoryDialog = ({ onClose }: CreateCategoryDialogProps) => {
-    const [categoryName, setCategoryName] = useState('');
-    const [selectedIcon, setSelectedIcon] = useState(AVAILABLE_ICONS[0]);
+export const CreateCategoryDialog = ({ onClose, mode, selectedCategory }: CreateCategoryDialogProps) => {
+    const [categoryName, setCategoryName] = useState(mode === 'edit' ? selectedCategory?.name : '');
+    const [selectedIcon, setSelectedIcon] = useState(mode === 'edit' ? selectedCategory?.icon : 'home' as MaterialIconName);
     const { colorScheme } = useColorScheme();
     const colors = getTodoScreenColors(colorScheme)
     const db = useSQLiteContext();
@@ -30,16 +31,44 @@ export const CreateCategoryDialog = ({ onClose }: CreateCategoryDialogProps) => 
 
     const createCategoryInDb = async () => {
         try {
-            if(categoryName.trim() === '') return
-            if(category.some((cat) => cat.name?.toLowerCase() === categoryName.toLowerCase())) {
+            if(mode === 'create'){
+            if(categoryName?.trim() === '') return
+            if(category.some((cat) => cat.name?.toLowerCase() === categoryName?.toLowerCase())) {
                 ToastAndroid.show('Category already exists', ToastAndroid.SHORT);
                 return;
             }
-            await db.runAsync(`INSERT INTO categories (id, name, icon) VALUES (?, ?, ?)`, [categoryName.toLowerCase() ,categoryName, selectedIcon]);
-            setCategory([...category, { id: categoryName.toLowerCase(), name: categoryName, icon: selectedIcon }])
+            await db.runAsync(`INSERT INTO categories (id, name, icon) VALUES (?, ?, ?)`, [categoryName?.toLowerCase() ,categoryName, selectedIcon]);
+            setCategory([...category, { id: categoryName?.toLowerCase(), name: categoryName, icon: selectedIcon }])
             ToastAndroid.show('Category created successfully', ToastAndroid.SHORT);
+        }
         } catch (error) {
             console.error('Error creating category in DB:', error);
+        }
+        onClose()
+    }
+
+    const updateCategory = async () => {
+        try {
+            if(mode === 'edit'){
+            if(categoryName?.trim() === '') return
+            await db.runAsync(`UPDATE categories SET name = ?, icon = ? WHERE id = ?`, [categoryName, selectedIcon, selectedCategory?.id]);
+            setCategory([...category.filter((cat) => cat.id !== selectedCategory?.id), { id: selectedCategory?.id, name: categoryName, icon: selectedIcon }]);
+            ToastAndroid.show('Category updated successfully', ToastAndroid.SHORT);
+        }
+        } catch (error) {
+            console.error('Error updating category in DB:', error);
+        }
+        onClose()
+    }
+    const deleteCategory = async () => {
+        try {
+            if(mode === 'edit'){
+            await db.runAsync(`DELETE FROM categories WHERE id = ?`, [selectedCategory?.id]);
+            setCategory([...category.filter((cat) => cat.id !== selectedCategory?.id)]);
+            ToastAndroid.show('Category deleted successfully', ToastAndroid.SHORT);
+        }
+        } catch (error) {
+            console.error('Error deleting category in DB:', error);
         }
         onClose()
     }
@@ -47,9 +76,9 @@ export const CreateCategoryDialog = ({ onClose }: CreateCategoryDialogProps) => 
         
             <View className="flex-1 justify-center items-center bg-black/50">
                 <View className="w-[90%] max-w-md bg-white dark:bg-[#1f1f1f] rounded-2xl p-4">
-                    <Typo className="text-xl font-bold mb-4">Create Category</Typo>
+                    <Typo className="text-xl font-bold mb-4">{mode === 'create' ? 'Create' : 'Edit'} Category</Typo>
                     
-                    {/* Name Input */}
+       
                     <TextInput
                         className="rounded-lg px-4 py-3 mb-4"
                         style={{
@@ -74,7 +103,7 @@ export const CreateCategoryDialog = ({ onClose }: CreateCategoryDialogProps) => 
                             {AVAILABLE_ICONS.map((icon) => (
                                 <TouchableOpacity
                                     key={icon}
-                                    onPress={() => setSelectedIcon(icon)}
+                                    onPress={() => setSelectedIcon(icon as MaterialIconName)}
                                     className={`w-12 h-12 items-center justify-center rounded-lg m-1
                                         `}
                                     style={{
@@ -93,20 +122,29 @@ export const CreateCategoryDialog = ({ onClose }: CreateCategoryDialogProps) => 
 
                     {/* Action Buttons */}
                     <View className="flex-row justify-end mt-4">
+                        
                         <TouchableOpacity
                             onPress={onClose}
-                            className="px-4 py-2 mr-2"
+                            className="px-4 py-2"
                         >
                             <Typo className="text-gray-600">Cancel</Typo>
                         </TouchableOpacity>
+                        {mode === 'edit' && (
+                    <TouchableOpacity
+                            onPress={deleteCategory}
+                            className="px-4 py-2 mr-2 bg-red-600 rounded-lg"
+                        >
+                            <Typo>Delete</Typo>
+                        </TouchableOpacity>
+                        )}
                         <TouchableOpacity
-                            onPress={createCategoryInDb}
-                            disabled={!categoryName.trim()}
+                            onPress={mode === 'create' ? createCategoryInDb : updateCategory}
+                            disabled={!categoryName?.trim()}
                             className={`px-4 py-2 rounded-lg ${
-                                categoryName.trim() ? 'bg-[#f3a49d]' : 'bg-gray-300'
+                                categoryName?.trim() ? 'bg-[#f3a49d]' : 'bg-gray-300'
                             }`}
                         >
-                            <Typo className="text-white font-bold">Create</Typo>
+                            <Typo className="text-white font-bold">{mode === 'create' ? 'Create' : 'Save'}</Typo>
                         </TouchableOpacity>
                     </View>
                 </View>

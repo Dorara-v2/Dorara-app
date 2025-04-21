@@ -34,7 +34,7 @@ export const TaskTodoNavigation = () => {
             }}
         >
             <Tabs.Screen
-                name="Todo"
+                name="Scheduled"
                 component={TodoScreen}
                 options={{
                     tabBarIcon: ({ color }) => (
@@ -43,7 +43,7 @@ export const TaskTodoNavigation = () => {
                 }}
                 />
             <Tabs.Screen
-                name="Task"
+                name="Unscheduled"
                 component={TaskScreen}
                 options={{
                     tabBarIcon: ({ color }) => (

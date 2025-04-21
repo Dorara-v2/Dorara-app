@@ -57,7 +57,7 @@ export default function DrawerNavigator() {
             ),
         }}
       />
-      <Drawer.Screen name="Todo/Tasks" component={TaskTodoNavigation} 
+      <Drawer.Screen name="Todo" component={TaskTodoNavigation} 
         options={{
             drawerIcon: ({ color }) => (
                 <MaterialIcon name="checklist" size={30} color={color} />

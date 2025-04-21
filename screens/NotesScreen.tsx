@@ -10,6 +10,7 @@ import { CreateDialog } from "components/CreateDialog";
 import { createFolder } from "utils/offlineDirectory/createFolder";
 import { useLoadingStore } from "store/loadingStore";
 import { MaterialIcon } from "components/MaterialIcon";
+import { NothingHere } from "components/NothingHere";
 export default function NotesScreen() {
     const { setContent, setLoading } = useLoadingStore();
     const { colorScheme } = useColorScheme();
@@ -130,10 +131,7 @@ export default function NotesScreen() {
                             <Typo className="text-lg mt-4">Loading folders...</Typo>
                         </View>
                     ) : (
-                        <ScreenContent className="flex-1 items-center justify-center py-8">
-                            <Image source={require("../assets/puffLick.png")} className="w-64 h-64 " resizeMode="contain"/>
-                            <Typo className="text-xl mt-4">Nothing Here</Typo>
-                        </ScreenContent>
+                        <NothingHere />
                     )
                 }
                 onRefresh={() => {
