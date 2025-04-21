@@ -6,6 +6,8 @@ import { useColorScheme } from 'nativewind';
 import { getTodoScreenColors } from 'utils/colors';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useTodoStore } from 'store/todoStore';
+import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIconName } from 'utils/types';
 
 interface CreateCategoryDialogProps {
     onClose: () => void;
@@ -80,7 +82,7 @@ export const CreateCategoryDialog = ({ onClose }: CreateCategoryDialogProps) => 
                                     }}    
                                 >
                                     <MaterialIcon
-                                        name={icon}
+                                        name={icon as MaterialIconName}
                                         size={24}
                                         color={selectedIcon === icon ? 'white' : '#666'}
                                     />

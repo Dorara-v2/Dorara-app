@@ -109,7 +109,7 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
             newTodo.time ?? null,
             newTodo.isCompleted,
             newTodo.categoryId ?? null,
-            newTodo.updatedAt,
+            Date.now(),
             selectedTodo?.id ?? '',
           ]
         );
