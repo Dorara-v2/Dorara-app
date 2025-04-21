@@ -34,6 +34,7 @@
     "expo-dev-launcher": "^5.0.17",
     "expo-file-system": "^18.0.12",
     "expo-font": "^13.0.4",
+    "expo-notifications": "^0.29.14",
     "expo-sqlite": "^15.1.4",
     "expo-status-bar": "~2.0.1",
     "firebase": "^10.5.2",

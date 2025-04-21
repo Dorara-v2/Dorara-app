@@ -1,7 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import DrawerNavigator from './DrawerNavigator';
 import SettingsScreen from 'screens/Settings';
-import { TouchableOpacity } from 'react-native';
+import { Platform, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import NoteEditor from 'screens/NoteEditor';
@@ -11,6 +11,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useTodoStore } from 'store/todoStore';
 import { Category, Todo } from 'utils/types';
 import { useEffect } from 'react';
+import { requestNotificationPermission, setNotificationChannelAsync } from 'utils/NotificationPerms';
 
 
 export type MainStackParamList = {
@@ -27,8 +28,11 @@ const Stack = createStackNavigator<MainStackParamList>();
 
 
 export default function MainNavigator() {
+
   useEffect(() => {
     loadTodo();
+    requestNotificationPermission()
+    setNotificationChannelAsync();
   }, [])
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>

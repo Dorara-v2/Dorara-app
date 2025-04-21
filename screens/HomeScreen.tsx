@@ -5,34 +5,31 @@ import { MainStackParamList } from 'navigation/MainNavigator';
 import { Image, TouchableOpacity } from 'react-native';
 import { useLoadingStore } from 'store/loadingStore';
 import { useUserStore } from 'store/userStore';
-import { signInWithGoogle } from 'utils/googleOauth';
 import { onlineFlow } from 'utils/onlineFlow';
-import auth from '@react-native-firebase/auth';
-import { useSQLiteContext } from 'expo-sqlite';
-import { useEffect, useState } from 'react';
-import { useTodoStore } from 'store/todoStore';
-import { CategoryList } from 'components/CategoryList';
-import { Category } from 'utils/types';
+import * as Notifications from 'expo-notifications';
 export default function HomeScreen() {
   const { setLoading, setContent } = useLoadingStore();
   const { user, signOut } = useUserStore();
   const navigation = useNavigation<NavigationProp<MainStackParamList>>();
   // console.log(auth().currentUser);
-  const db = useSQLiteContext();
-  const getCats = async () => {
-    // await db.runAsync(`DELETE FROM categories`);
-    // const cats = await db.getAllAsync('SELECT * FROM categories');
-    // console.log(cats);
-  }
-  // getCats()
-  // const {todo, category} = useTodoStore()
-  // console.log(todo, category)
-  const [selectedCategory, setSelectedCategory] = useState<Category>({
-    id: 'all',
-    name: 'All',
-    icon: 'checklist', 
-    color: '#f3a49d'
-  })
+
+  const scheduleNotification = async () => {
+    try {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Hello!',
+          body: 'This is a test notification.',
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.DATE,
+          date: new Date(Date.now() + 10000),
+        },
+      });
+    } catch (error) {
+      console.log('Error scheduling notification:', error);
+    }
+  };
+
   return (
     <ScreenContent>
       <TouchableOpacity
@@ -52,9 +49,7 @@ export default function HomeScreen() {
           Sign Out
         </Typo>
       </TouchableOpacity>
-      <TouchableOpacity
-        onPress={onlineFlow}
-        className="mb-4 rounded-xl bg-[#f3a49d] px-6 py-4">
+      <TouchableOpacity onPress={onlineFlow} className="mb-4 rounded-xl bg-[#f3a49d] px-6 py-4">
         <Typo color="#000" className="text-center text-lg font-bold text-white">
           Sign in
         </Typo>
@@ -64,6 +59,13 @@ export default function HomeScreen() {
         className="mb-4 rounded-xl bg-[#f3a49d] px-6 py-4">
         <Typo color="#000" className="text-center text-lg font-bold text-white">
           Terms of services
+        </Typo>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={scheduleNotification}
+        className="mb-4 rounded-xl bg-[#f3a49d] px-6 py-4">
+        <Typo color="#000" className="text-center text-lg font-bold text-white">
+          Schedule Notification
         </Typo>
       </TouchableOpacity>
     </ScreenContent>

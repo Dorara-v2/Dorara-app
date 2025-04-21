@@ -4,6 +4,10 @@
     "name": "Dorara",
     "slug": "Dorara",
     "version": "1.0.0",
+    "notification": {
+      "icon": "./assets/notification-logo.png",
+      "color": "#000000"
+    },
     
     "web": {
       "favicon": "./assets/favicon.png"
@@ -32,6 +36,13 @@
           "ios": {
             "customBuildFlags": ["-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"]
           }
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-logo.png",
+          "color": "#000000"
         }
       ]
     ],
