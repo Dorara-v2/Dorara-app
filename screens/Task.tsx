@@ -2,113 +2,102 @@ import { useState } from 'react';
 import { View, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { MaterialIcon } from 'components/MaterialIcon';
 import ScreenContent from 'components/ScreenContent';
-import { Typo } from 'components/Typo';
 import { CreateTodoModal } from 'components/CreateTodoModal';
 import { CategoryList } from 'components/CategoryList';
-import { Category, MaterialIconName, Todo } from 'utils/types';
+import { Category, Todo } from 'utils/types';
 import { useTodoStore } from 'store/todoStore';
-import { MaterialIcons } from '@expo/vector-icons';
+import { useSQLiteContext } from 'expo-sqlite';
+import { TodoItem } from 'components/TodoItem';
 
 export const TaskScreen = () => {
-    const { todo: todos, category } = useTodoStore();
-    const [mode, setMode] = useState<'create' | 'edit'>('create');
-    const [selectedTodo, setSelectedTodo] = useState<Todo | undefined>(undefined);
-    const [selectedCategory, setSelectedCategory] = useState<Category>({
-        id: 'all',
-        name: 'All',
-        icon: 'checklist',
-        color: '#f3a49d',
-    });
-    const [isAddModalVisible, setIsAddModalVisible] = useState(false);
-    
-    // Filter unscheduled todos
-    const unscheduledTodos = todos
-        .filter(todo => !todo.date && (selectedCategory.id === 'all' || todo.categoryId === selectedCategory.id))
-        .sort((a, b) => b.updatedAt - a.updatedAt);
+  const { todo: todos, category } = useTodoStore();
+  const [mode, setMode] = useState<'create' | 'edit'>('create');
+  const [selectedTodo, setSelectedTodo] = useState<Todo | undefined>(undefined);
+  const [selectedCategory, setSelectedCategory] = useState<Category>({
+    id: 'all',
+    name: 'All',
+    icon: 'checklist',
+    color: '#f3a49d',
+  });
+  const db = useSQLiteContext();
+  const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+  const { todo, setTodo } = useTodoStore();
+  const unscheduledTodos = todos
+    .filter(
+      (todo) =>
+        !todo.date && (selectedCategory.id === 'all' || todo.categoryId === selectedCategory.id)
+    )
+    .sort((a, b) => b.updatedAt - a.updatedAt);
 
-    const renderTaskItem = (todo: Todo) => (
-        <TouchableOpacity
-            key={todo.id}
-            className={`mb-3 flex-row items-center rounded-xl bg-white p-4 dark:bg-[#1f1f1f]
-                ${todo.isCompleted ? 'opacity-60' : ''}`}
-            style={{
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.1,
-                shadowRadius: 3,
-                elevation: 3,
-            }}
-            onLongPress={() => {
-                setMode('edit');
-                setSelectedTodo(todo);
-                setIsAddModalVisible(true)
-            }}
-            >
-            <TouchableOpacity
-                className={`mr-4 h-6 w-6 items-center justify-center rounded-full border-2
-                    ${todo.isCompleted ? 'border-[#f3a49d] bg-[#f3a49d]' : 'border-gray-300'}`}>
-                {todo.isCompleted === 1 && <MaterialIcon name="check" size={16} color="white" />}
-            </TouchableOpacity>
+  const toggleTodo = async (selectedTodo: Todo) => {
+    const updatedTodo = { ...selectedTodo, isCompleted: selectedTodo.isCompleted === 1 ? 0 : 1 };
+    try {
+      await db.runAsync(`UPDATE todos SET isCompleted = ?, updatedAt = ? WHERE id = ?`, [
+        updatedTodo.isCompleted,
+        Date.now(),
+        updatedTodo.id,
+      ]);
+      setTodo([...todo.filter((t) => t.id !== selectedTodo.id), updatedTodo]);
+    } catch (error) {
+      console.log('Error updating todo in DB:', error);
+    }
+  };
 
-            <View className="flex-1">
-                <Typo className={`text-lg ${todo.isCompleted ? 'text-gray-500 line-through' : ''}`}>
-                    {todo.name}
-                </Typo>
-            </View>
+  const onLongPressAction = (todo: Todo) => {
+    setMode('edit');
+    setSelectedTodo(todo);
+    setIsAddModalVisible(true);
+  };
 
-            {todo.categoryId && todo.categoryId !== 'all' && (
-                <MaterialIcon 
-                    name={getCategoryIcon(todo.categoryId) as MaterialIconName} 
-                    size={20} 
-                    color="#f3a49d" 
-                />
-            )}
-        </TouchableOpacity>
-    );
+  const getCategoryIcon = (categoryId: string) => {
+    const categoryItem = category.find((cat) => cat.id === categoryId);
+    return categoryItem ? categoryItem.icon : 'checklist';
+  };
 
-    const getCategoryIcon = (categoryId: string) => {
-        const categoryItem = category.find(cat => cat.id === categoryId);
-        return categoryItem ? categoryItem.icon : 'checklist';
-    };
+  return (
+    <ScreenContent>
+      <View className="h-14">
+        <CategoryList
+          mode="display"
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+        />
+      </View>
 
-    return (
-        <ScreenContent>
-            <View className="h-14">
-                <CategoryList 
-                    mode="display" 
-                    selectedCategory={selectedCategory} 
-                    setSelectedCategory={setSelectedCategory} 
-                />
-            </View>
+      <ScrollView className="flex-1 px-4">
+        {unscheduledTodos.map((todo) =>
+          TodoItem({ todo, toggleTodo, getCategoryIcon, onLongPressAction })
+        )}
+      </ScrollView>
 
-            <ScrollView className="flex-1 px-4">
-                {unscheduledTodos.map(renderTaskItem)}
-            </ScrollView>
+      <TouchableOpacity
+        onPress={() => {
+          setMode('create');
+          setSelectedTodo(undefined);
+          setIsAddModalVisible(true);
+        }}
+        className="absolute bottom-20 right-10 h-16 w-16 items-center justify-center rounded-full bg-[#f3a49d]"
+        style={{
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 4.65,
+        }}>
+        <MaterialIcon name="add" size={30} color="white" />
+      </TouchableOpacity>
 
-            <TouchableOpacity
-                onPress={() => {
-                    setMode('create');
-                    setSelectedTodo(undefined);
-                    setIsAddModalVisible(true)
-                }}
-                className="absolute bottom-20 right-10 h-16 w-16 items-center justify-center rounded-full bg-[#f3a49d]"
-                style={{
-                    elevation: 8,
-                    shadowColor: '#000',
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 4.65,
-                }}>
-                <MaterialIcon name="add" size={30} color="white" />
-            </TouchableOpacity>
-
-            <Modal
-                visible={isAddModalVisible}
-                transparent
-                animationType="slide"
-                onRequestClose={() => setIsAddModalVisible(false)}>
-                <CreateTodoModal mode={mode} todo={selectedTodo} setIsAddModalVisible={setIsAddModalVisible} />
-            </Modal>
-        </ScreenContent>
-    );
+      <Modal
+        visible={isAddModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setIsAddModalVisible(false)}>
+        <CreateTodoModal
+          mode={mode}
+          todo={selectedTodo}
+          setIsAddModalVisible={setIsAddModalVisible}
+        />
+      </Modal>
+    </ScreenContent>
+  );
 };

@@ -131,7 +131,11 @@ export const TodoScreen = () => {
       </ScrollView>
 
       <TouchableOpacity
-        onPress={() => setIsAddModalVisible(true)}
+        onPress={() => {
+          setSelectedTodo(undefined);
+          setMode('create');
+          setIsAddModalVisible(true)
+        }}
         className="absolute bottom-20 right-10 h-16 w-16 items-center justify-center rounded-full bg-[#f3a49d]"
         style={{
           elevation: 8,
