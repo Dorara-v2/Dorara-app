@@ -9,7 +9,7 @@ import { View } from "react-native";
 type Props = {
     todo: Todo;
     toggleTodo: (todo: Todo) => void;
-    getCategoryIcon: (categoryId: string) => string | undefined;
+    getCategoryIcon: (categoryId: string) => string | null | undefined;
     onLongPressAction: (todo: Todo) => void;
 }
 
