@@ -93,3 +93,4 @@ export const updateFirebaseTodo = async (todo: Todo) => {
         return false;
     }
 }
+

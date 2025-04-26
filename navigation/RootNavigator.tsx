@@ -5,7 +5,6 @@ import MainNavigator from "./MainNavigator"
 import { useEffect, useState } from "react"
 import auth from "@react-native-firebase/auth"
 import { GUEST_USER, useUserStore } from "store/userStore"
-import { useLoadingStore } from "store/loadingStore"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import ScreenContent from "components/ScreenContent"
 import { Image } from "react-native"
@@ -13,7 +12,6 @@ import { Image } from "react-native"
 
 export const RootNavigator = () => {
     const [initializing, setInitializing] = useState(true);
-    const {isLoading, setLoading, setContent} = useLoadingStore();
     const {user, setUser, authState, setAuthState} = useUserStore()
 
     const onAuthStateChanged = (user: any) => {

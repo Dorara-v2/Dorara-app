@@ -11,6 +11,7 @@ import { useTodoStore } from 'store/todoStore';
 import { useSQLiteContext } from 'expo-sqlite';
 import { TodoItem } from 'components/TodoItem';
 import { NothingHere } from 'components/NothingHere';
+import { updateFirebaseTodo } from 'firebase/todo';
 
 const groupTodosByDate = (todos: Todo[], selectedCategory: Category['id']) => {
   const now = new Date();
@@ -95,6 +96,14 @@ export const TodoScreen = () => {
         updatedTodo.id,
       ]);
       setTodo([...todo.filter((t) => t.id !== selectedTodo.id), updatedTodo]);
+      const firebaseUpdate = updateFirebaseTodo({
+        ...updatedTodo,
+        updatedAt: Date.now(),
+      });
+      if(!firebaseUpdate){
+          console.log('inserting in todo_sync')
+          await db.runAsync(`INSERT INTO todo_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)`, [updatedTodo.id, 'update', Date.now(), 'local']);
+      }
     } catch (error) {
       console.log('Error updating todo in DB:', error);
     }

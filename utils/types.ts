@@ -6,6 +6,7 @@ export interface Todo {
     name: string;
     date?: number;
     time?: number;
+    notificationId?: string;
     isCompleted: number;
     categoryId?: string;
     updatedAt: number;

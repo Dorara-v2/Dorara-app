@@ -1,6 +1,7 @@
 import {
   KeyboardAvoidingView,
   Platform,
+  Switch,
   TextInput,
   ToastAndroid,
   TouchableOpacity,
@@ -20,6 +21,7 @@ import { getTodoScreenColors } from 'utils/colors';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useTodoStore } from 'store/todoStore';
 import { createFirebaseTodo, deleteFirebaseTodo, updateFirebaseTodo } from 'firebase/todo';
+import { randomNotificationBody, scheduleNotification } from 'utils/notificationManager';
 
 type Props = {
   setIsAddModalVisible: (visible: boolean) => void;
@@ -38,10 +40,14 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
           time: undefined,
           date: undefined,
           isCompleted: 0,
+          notificationId: undefined,
           categoryId: undefined,
           updatedAt: Date.now(),
         }
       : (selectedTodo as Todo)
+  );
+  const [isReminderEnabled, setIsReminderEnabled] = useState<boolean>(
+    selectedTodo?.notificationId ? true : false || false
   );
   const { todo, setTodo, category: categories } = useTodoStore();
   const [category, setCategory] = useState<Category>(
@@ -80,27 +86,39 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
     }
   };
 
+  console.log(todo)
+
   const createOrUpdateTodoInDb = async () => {
     try {
-      if (newTodo.name.trim() === '') return;
+      if (newTodo.name.trim() === '') {
+        ToastAndroid.show('Todo name cannot be empty', ToastAndroid.SHORT);
+        return;
+      };
       if (mode === 'create') {
+        if(isReminderEnabled && newTodo.date && newTodo.time){
+          setNewTodo({ ...newTodo, notificationId: await scheduleNotification(`Reminder: ${newTodo.name}`, randomNotificationBody(newTodo.name), newTodo.time) });
+        }
         await db.runAsync(
-          `INSERT INTO todos (id, name, date, time, isCompleted, categoryId, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO todos (id, name, date, time, isCompleted, notificationId, categoryId, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             newTodo.id,
             newTodo.name,
             newTodo.date ?? null,
             newTodo.time ?? null,
             newTodo.isCompleted,
+            newTodo.notificationId ?? null,
             newTodo.categoryId ?? null,
             newTodo.updatedAt,
           ]
         );
         setTodo([...todo, newTodo]);
         const firebaseCreate = await createFirebaseTodo(newTodo);
-        if(!firebaseCreate){
-            console.log('inserting in todo_sync')
-            await db.runAsync(`INSERT INTO todo_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)`, [newTodo.id, 'create', Date.now(), 'local']);
+        if (!firebaseCreate) {
+          console.log('inserting in todo_sync');
+          await db.runAsync(
+            `INSERT INTO todo_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)`,
+            [newTodo.id, 'create', Date.now(), 'local']
+          );
         }
         ToastAndroid.show('Todo created successfully', ToastAndroid.SHORT);
         setIsAddModalVisible(false);
@@ -130,9 +148,12 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
           categoryId: newTodo.categoryId ?? undefined,
           updatedAt: Date.now(),
         });
-        if(!firebaseUpdate){
-            console.log('inserting in todo_sync')
-            await db.runAsync(`INSERT INTO todo_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)`, [selectedTodo!.id, 'update', Date.now(), 'local']);
+        if (!firebaseUpdate) {
+          console.log('inserting in todo_sync');
+          await db.runAsync(
+            `INSERT INTO todo_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)`,
+            [selectedTodo!.id, 'update', Date.now(), 'local']
+          );
         }
         ToastAndroid.show('Todo updated successfully', ToastAndroid.SHORT);
         setIsAddModalVisible(false);
@@ -149,9 +170,12 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
         const updatedTodos = todo.filter((t) => t.id !== selectedTodo?.id);
         setTodo(updatedTodos);
         const firebaseDelete = await deleteFirebaseTodo(selectedTodo.id);
-        if(!firebaseDelete){
-            console.log('inserting in todo_sync')
-            await db.runAsync(`INSERT INTO todo_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)`, [selectedTodo!.id, 'delete', Date.now(), 'local']);
+        if (!firebaseDelete) {
+          console.log('inserting in todo_sync');
+          await db.runAsync(
+            `INSERT INTO todo_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)`,
+            [selectedTodo!.id, 'delete', Date.now(), 'local']
+          );
         }
         ToastAndroid.show('Todo deleted successfully', ToastAndroid.SHORT);
         setIsAddModalVisible(false);
@@ -230,7 +254,6 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
                 </TouchableOpacity>
               </View>
 
-              {/* Date Picker */}
               {isDatePickerVisible && (
                 <DateTimePicker
                   value={newTodo.date ? new Date(newTodo.date) : new Date()}
@@ -256,6 +279,15 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
                 />
               )}
 
+              <View className="flex-row items-center justify-start gap-x-2 pt-2">
+                <Typo>Enable Notification Reminder</Typo>
+                <Switch
+                  trackColor={{ false: '#767577', true: '#f3a49d' }}
+                  thumbColor={colorScheme === 'dark' ? '#fff' : '#f4f3f4'}
+                  onChange={() => setIsReminderEnabled((prev) => !prev)}
+                  value={isReminderEnabled}
+                />
+              </View>
               <View className="flex-row justify-end pt-2">
                 <TouchableOpacity onPress={() => setIsAddModalVisible(false)} className="px-4 py-2">
                   <Typo className="text-gray-600">Cancel</Typo>
@@ -270,7 +302,7 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
                 <TouchableOpacity
                   onPress={createOrUpdateTodoInDb}
                   className="rounded-lg bg-[#f3a49d] px-4 py-2">
-                  <Typo className="font-bold text-white">{mode === 'create' ? 'Add' : 'Edit'}</Typo>
+                  <Typo className="font-bold text-white">{mode === 'create' ? 'Add' : 'Save'}</Typo>
                 </TouchableOpacity>
               </View>
             </View>

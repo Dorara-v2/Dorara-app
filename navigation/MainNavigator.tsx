@@ -68,12 +68,9 @@ export default function MainNavigator() {
 
 export const loadTodo = async () => {
   const db = useSQLiteContext();
-  console.log(db)
-  console.log('loadTodo');
   const { setTodo, setCategory } = useTodoStore();
   const todos: Todo[] = await db.getAllAsync('SELECT * FROM todos');
   const categories: Category[] = await db.getAllAsync('SELECT * FROM categories');
-  console.log(todos, categories);
   setTodo(todos);
   setCategory(categories);
 }

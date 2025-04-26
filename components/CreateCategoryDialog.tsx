@@ -38,26 +38,28 @@ export const CreateCategoryDialog = ({ onClose, mode, selectedCategory }: Create
                 ToastAndroid.show('Category already exists', ToastAndroid.SHORT);
                 return;
             }
-            await db.runAsync(`INSERT INTO categories (id, name, icon) VALUES (?, ?, ?)`, [categoryName?.toLowerCase() ,categoryName, selectedIcon]);
+            if(!categoryName) return
+            await db.runAsync(`INSERT INTO categories (id, name, icon) VALUES (?, ?, ?)`, [categoryName!.toLowerCase() ,categoryName, selectedIcon!]);
+            setCategory([...category, { id: categoryName?.toLowerCase(), name: categoryName, icon: selectedIcon }])
+            onClose()
             const firebaseCreate = await createFirebaseCategory({id: categoryName?.toLowerCase(), name: categoryName, icon: selectedIcon})
             if(!firebaseCreate){
                 console.log('inserting in category_sync')
                 await db.runAsync(`INSERT INTO category_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)`, [categoryName!.toLowerCase(), 'create', Date.now(), 'local']);
             }
-            setCategory([...category, { id: categoryName?.toLowerCase(), name: categoryName, icon: selectedIcon }])
             ToastAndroid.show('Category created successfully', ToastAndroid.SHORT);
         }
         } catch (error) {
             console.error('Error creating category in DB:', error);
         }
-        onClose()
     }
 
     const updateCategory = async () => {
         try {
             if(mode === 'edit' && selectedCategory?.id != undefined){
             if(categoryName?.trim() === '') return
-            await db.runAsync(`UPDATE categories SET name = ?, icon = ? WHERE id = ?`, [categoryName, selectedIcon, selectedCategory?.id]);
+            if(!categoryName) return
+            await db.runAsync(`UPDATE categories SET name = ?, icon = ? WHERE id = ?`, [categoryName, selectedIcon!, selectedCategory?.id]);
             setCategory([...category.filter((cat) => cat.id !== selectedCategory?.id), { id: selectedCategory?.id, name: categoryName, icon: selectedIcon }]);
             const firebaseUpdate = await updateFirebaseCategory({id: selectedCategory?.id, name: categoryName, icon: selectedIcon})
             if(!firebaseUpdate){

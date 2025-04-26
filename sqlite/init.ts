@@ -1,5 +1,4 @@
 import * as SQLite from 'expo-sqlite';
-import uuid from "react-native-uuid"
 
 
 export const initDB = async () => {
@@ -10,6 +9,7 @@ export const initDB = async () => {
             id TEXT PRIMARY KEY,
             name TEXT NOT NULL,
             date INTEGER,
+            notificationId TEXT,
             isCompleted INTEGER DEFAULT 0,
             categoryId TEXT,
             time INTEGER,

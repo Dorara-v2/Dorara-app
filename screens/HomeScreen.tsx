@@ -15,16 +15,17 @@ export default function HomeScreen() {
 
   const scheduleNotification = async () => {
     try {
-      await Notifications.scheduleNotificationAsync({
+      const id = await Notifications.scheduleNotificationAsync({
         content: {
           title: 'Hello!',
           body: 'This is a test notification.',
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.DATE,
-          date: new Date(Date.now() + 10000),
+          date: new Date(Date.now() + 1000),
         },
       });
+      console.log(await Notifications.getAllScheduledNotificationsAsync());
     } catch (error) {
       console.log('Error scheduling notification:', error);
     }
