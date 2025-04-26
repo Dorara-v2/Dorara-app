@@ -19,6 +19,7 @@ import { useColorScheme } from 'nativewind';
 import { getTodoScreenColors } from 'utils/colors';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useTodoStore } from 'store/todoStore';
+import { createFirebaseTodo, deleteFirebaseTodo, updateFirebaseTodo } from 'firebase/todo';
 
 type Props = {
   setIsAddModalVisible: (visible: boolean) => void;
@@ -96,6 +97,7 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
           ]
         );
         setTodo([...todo, newTodo]);
+        await createFirebaseTodo(newTodo);
         ToastAndroid.show('Todo created successfully', ToastAndroid.SHORT);
         setIsAddModalVisible(false);
       } else {
@@ -115,6 +117,15 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
         );
         const updatedTodos = todo.map((t) => (t.id === selectedTodo?.id ? newTodo : t));
         setTodo(updatedTodos);
+        await updateFirebaseTodo({
+          id: selectedTodo!.id,
+          name: newTodo.name,
+          date: newTodo.date ?? undefined,
+          time: newTodo.time ?? undefined,
+          isCompleted: newTodo.isCompleted,
+          categoryId: newTodo.categoryId ?? undefined,
+          updatedAt: Date.now(),
+        });
         ToastAndroid.show('Todo updated successfully', ToastAndroid.SHORT);
         setIsAddModalVisible(false);
       }
@@ -125,17 +136,18 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
 
   const handleDeleteTodo = async () => {
     try {
-      if(mode === 'edit' && selectedTodo) {
-      await db.runAsync(`DELETE FROM todos WHERE id = ?`, [selectedTodo?.id]);
-      const updatedTodos = todo.filter((t) => t.id !== selectedTodo?.id);
-      setTodo(updatedTodos);
-      ToastAndroid.show('Todo deleted successfully', ToastAndroid.SHORT);
-      setIsAddModalVisible(false);
+      if (mode === 'edit' && selectedTodo) {
+        await db.runAsync(`DELETE FROM todos WHERE id = ?`, [selectedTodo?.id]);
+        const updatedTodos = todo.filter((t) => t.id !== selectedTodo?.id);
+        setTodo(updatedTodos);
+        await deleteFirebaseTodo(selectedTodo.id);
+        ToastAndroid.show('Todo deleted successfully', ToastAndroid.SHORT);
+        setIsAddModalVisible(false);
       }
     } catch (error) {
       console.log('Error deleting todo in DB:', error);
     }
-  }
+  };
 
   return (
     <TouchableWithoutFeedback onPress={() => setIsAddModalVisible(false)}>
@@ -149,7 +161,6 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
               style={{
                 backgroundColor: colors.bg,
               }}>
-              {/* Title Input */}
               <TextInput
                 className="mb-4 border-b border-gray-200 p-2 text-lg dark:border-gray-700"
                 placeholder="What needs to be done?"
@@ -171,7 +182,6 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
                 mode="create"
               />
 
-              {/* Date and Time Selectors */}
               <View className="flex-row gap-x-4 space-x-2">
                 <TouchableOpacity
                   onPress={() => setIsDatePickerVisible(true)}
@@ -222,7 +232,6 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
                 />
               )}
 
-              {/* Time Picker */}
               {isTimePickerVisible && (
                 <DateTimePicker
                   value={newTodo.time ? new Date(newTodo.time) : new Date()}
@@ -235,22 +244,17 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
                 />
               )}
 
-              {/* Action Buttons */}
               <View className="flex-row justify-end pt-2">
-                
-                <TouchableOpacity
-                  onPress={() => setIsAddModalVisible(false)}
-                  className="px-4 py-2">
+                <TouchableOpacity onPress={() => setIsAddModalVisible(false)} className="px-4 py-2">
                   <Typo className="text-gray-600">Cancel</Typo>
                 </TouchableOpacity>
                 {mode === 'edit' && selectedTodo && (
-                <TouchableOpacity
-                  onPress={handleDeleteTodo}
-                  className="mr-2 px-4 py-2 bg-red-600 rounded-lg"
-                  >
-                  <Typo >Delete</Typo>
+                  <TouchableOpacity
+                    onPress={handleDeleteTodo}
+                    className="mr-2 rounded-lg bg-red-600 px-4 py-2">
+                    <Typo>Delete</Typo>
                   </TouchableOpacity>
-  )}
+                )}
                 <TouchableOpacity
                   onPress={createOrUpdateTodoInDb}
                   className="rounded-lg bg-[#f3a49d] px-4 py-2">

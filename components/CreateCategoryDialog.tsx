@@ -7,6 +7,7 @@ import { getTodoScreenColors } from 'utils/colors';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useTodoStore } from 'store/todoStore';
 import { Category, MaterialIconName } from 'utils/types';
+import { createCategory, createFirebaseCategory, deleteFirebaseCategory, updateFirebaseCategory } from 'firebase/category';
 
 interface CreateCategoryDialogProps {
     onClose: () => void;
@@ -38,6 +39,7 @@ export const CreateCategoryDialog = ({ onClose, mode, selectedCategory }: Create
                 return;
             }
             await db.runAsync(`INSERT INTO categories (id, name, icon) VALUES (?, ?, ?)`, [categoryName?.toLowerCase() ,categoryName, selectedIcon]);
+            await createFirebaseCategory({id: categoryName?.toLowerCase(), name: categoryName, icon: selectedIcon})
             setCategory([...category, { id: categoryName?.toLowerCase(), name: categoryName, icon: selectedIcon }])
             ToastAndroid.show('Category created successfully', ToastAndroid.SHORT);
         }
@@ -53,6 +55,7 @@ export const CreateCategoryDialog = ({ onClose, mode, selectedCategory }: Create
             if(categoryName?.trim() === '') return
             await db.runAsync(`UPDATE categories SET name = ?, icon = ? WHERE id = ?`, [categoryName, selectedIcon, selectedCategory?.id]);
             setCategory([...category.filter((cat) => cat.id !== selectedCategory?.id), { id: selectedCategory?.id, name: categoryName, icon: selectedIcon }]);
+            await updateFirebaseCategory({id: selectedCategory?.id, name: categoryName, icon: selectedIcon})
             ToastAndroid.show('Category updated successfully', ToastAndroid.SHORT);
         }
         } catch (error) {
@@ -62,8 +65,9 @@ export const CreateCategoryDialog = ({ onClose, mode, selectedCategory }: Create
     }
     const deleteCategory = async () => {
         try {
-            if(mode === 'edit'){
+            if(mode === 'edit' && selectedCategory?.id != undefined){
             await db.runAsync(`DELETE FROM categories WHERE id = ?`, [selectedCategory?.id]);
+            await deleteFirebaseCategory(selectedCategory.id)
             setCategory([...category.filter((cat) => cat.id !== selectedCategory?.id)]);
             ToastAndroid.show('Category deleted successfully', ToastAndroid.SHORT);
         }
@@ -92,7 +96,7 @@ export const CreateCategoryDialog = ({ onClose, mode, selectedCategory }: Create
                         autoFocus
                     />
 
-                    {/* Icon Selector */}
+                    
                     <Typo className="text-sm text-gray-500 mb-2">Select an icon</Typo>
                     <ScrollView 
                         horizontal 
