@@ -21,5 +21,17 @@ export const initDB = async () => {
             color TEXT,
             icon TEXT 
         );
+        CREATE TABLE IF NOT EXISTS category_sync (
+            id TEXT,
+            operation TEXT,
+            updatedAt INTEGER,
+            source TEXT
+        );
+        CREATE TABLE IF NOT EXISTS todo_sync (
+            id TEXT,
+            operation TEXT,
+            updatedAt INTEGER,
+            source TEXT
+        );
         `);
 }

@@ -97,7 +97,11 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
           ]
         );
         setTodo([...todo, newTodo]);
-        await createFirebaseTodo(newTodo);
+        const firebaseCreate = await createFirebaseTodo(newTodo);
+        if(!firebaseCreate){
+            console.log('inserting in todo_sync')
+            await db.runAsync(`INSERT INTO todo_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)`, [newTodo.id, 'create', Date.now(), 'local']);
+        }
         ToastAndroid.show('Todo created successfully', ToastAndroid.SHORT);
         setIsAddModalVisible(false);
       } else {
@@ -117,7 +121,7 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
         );
         const updatedTodos = todo.map((t) => (t.id === selectedTodo?.id ? newTodo : t));
         setTodo(updatedTodos);
-        await updateFirebaseTodo({
+        const firebaseUpdate = await updateFirebaseTodo({
           id: selectedTodo!.id,
           name: newTodo.name,
           date: newTodo.date ?? undefined,
@@ -126,6 +130,10 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
           categoryId: newTodo.categoryId ?? undefined,
           updatedAt: Date.now(),
         });
+        if(!firebaseUpdate){
+            console.log('inserting in todo_sync')
+            await db.runAsync(`INSERT INTO todo_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)`, [selectedTodo!.id, 'update', Date.now(), 'local']);
+        }
         ToastAndroid.show('Todo updated successfully', ToastAndroid.SHORT);
         setIsAddModalVisible(false);
       }
@@ -140,7 +148,11 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
         await db.runAsync(`DELETE FROM todos WHERE id = ?`, [selectedTodo?.id]);
         const updatedTodos = todo.filter((t) => t.id !== selectedTodo?.id);
         setTodo(updatedTodos);
-        await deleteFirebaseTodo(selectedTodo.id);
+        const firebaseDelete = await deleteFirebaseTodo(selectedTodo.id);
+        if(!firebaseDelete){
+            console.log('inserting in todo_sync')
+            await db.runAsync(`INSERT INTO todo_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)`, [selectedTodo!.id, 'delete', Date.now(), 'local']);
+        }
         ToastAndroid.show('Todo deleted successfully', ToastAndroid.SHORT);
         setIsAddModalVisible(false);
       }

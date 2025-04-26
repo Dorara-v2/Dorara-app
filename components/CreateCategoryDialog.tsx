@@ -7,7 +7,7 @@ import { getTodoScreenColors } from 'utils/colors';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useTodoStore } from 'store/todoStore';
 import { Category, MaterialIconName } from 'utils/types';
-import { createCategory, createFirebaseCategory, deleteFirebaseCategory, updateFirebaseCategory } from 'firebase/category';
+import { createFirebaseCategory, deleteFirebaseCategory, updateFirebaseCategory } from 'firebase/category';
 
 interface CreateCategoryDialogProps {
     onClose: () => void;
@@ -39,7 +39,11 @@ export const CreateCategoryDialog = ({ onClose, mode, selectedCategory }: Create
                 return;
             }
             await db.runAsync(`INSERT INTO categories (id, name, icon) VALUES (?, ?, ?)`, [categoryName?.toLowerCase() ,categoryName, selectedIcon]);
-            await createFirebaseCategory({id: categoryName?.toLowerCase(), name: categoryName, icon: selectedIcon})
+            const firebaseCreate = await createFirebaseCategory({id: categoryName?.toLowerCase(), name: categoryName, icon: selectedIcon})
+            if(!firebaseCreate){
+                console.log('inserting in category_sync')
+                await db.runAsync(`INSERT INTO category_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)`, [categoryName!.toLowerCase(), 'create', Date.now(), 'local']);
+            }
             setCategory([...category, { id: categoryName?.toLowerCase(), name: categoryName, icon: selectedIcon }])
             ToastAndroid.show('Category created successfully', ToastAndroid.SHORT);
         }
@@ -51,11 +55,15 @@ export const CreateCategoryDialog = ({ onClose, mode, selectedCategory }: Create
 
     const updateCategory = async () => {
         try {
-            if(mode === 'edit'){
+            if(mode === 'edit' && selectedCategory?.id != undefined){
             if(categoryName?.trim() === '') return
             await db.runAsync(`UPDATE categories SET name = ?, icon = ? WHERE id = ?`, [categoryName, selectedIcon, selectedCategory?.id]);
             setCategory([...category.filter((cat) => cat.id !== selectedCategory?.id), { id: selectedCategory?.id, name: categoryName, icon: selectedIcon }]);
-            await updateFirebaseCategory({id: selectedCategory?.id, name: categoryName, icon: selectedIcon})
+            const firebaseUpdate = await updateFirebaseCategory({id: selectedCategory?.id, name: categoryName, icon: selectedIcon})
+            if(!firebaseUpdate){
+                console.log('inserting in category_sync')
+                await db.runAsync(`INSERT INTO category_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)`, [selectedCategory!.id, 'update', Date.now(), 'local']);
+            }
             ToastAndroid.show('Category updated successfully', ToastAndroid.SHORT);
         }
         } catch (error) {
@@ -67,7 +75,11 @@ export const CreateCategoryDialog = ({ onClose, mode, selectedCategory }: Create
         try {
             if(mode === 'edit' && selectedCategory?.id != undefined){
             await db.runAsync(`DELETE FROM categories WHERE id = ?`, [selectedCategory?.id]);
-            await deleteFirebaseCategory(selectedCategory.id)
+            const firebaseDelete = await deleteFirebaseCategory(selectedCategory.id)
+            if(!firebaseDelete){
+                console.log('inserting in category_sync')
+                await db.runAsync(`INSERT INTO category_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)`, [selectedCategory!.id, 'delete', Date.now(), 'local']);
+            }
             setCategory([...category.filter((cat) => cat.id !== selectedCategory?.id)]);
             ToastAndroid.show('Category deleted successfully', ToastAndroid.SHORT);
         }
