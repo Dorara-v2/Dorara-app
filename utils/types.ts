@@ -17,7 +17,7 @@ export interface Category {
     id?: string;
     name: string;
     color?: string;
-    icon: string;
+    icon?: string;
 }
 
 export type MaterialIconName = keyof typeof MaterialIcons.glyphMap

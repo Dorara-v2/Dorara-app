@@ -15,7 +15,7 @@ type props = {
 
 export default function BackupScreen({ onBackupComplete }: props) {
   const db = useSQLiteContext();
-  const user = auth().currentUser
+  const user = auth().currentUser;
   const backup = async () => {
     const categories: Category[] = await fetchAllCategories();
     if (categories.length > 0) {
@@ -23,7 +23,7 @@ export default function BackupScreen({ onBackupComplete }: props) {
         await db.runAsync(`INSERT OR REPLACE INTO categories (id, name, icon) VALUES (?, ?, ?)`, [
           category.id ?? null,
           category.name,
-          category.icon,
+          category.icon ?? null,
         ]);
       }
     }
@@ -32,18 +32,27 @@ export default function BackupScreen({ onBackupComplete }: props) {
       for (const todo of todos) {
         await db.runAsync(
           `INSERT OR REPLACE INTO todos (id, name, date, time, notificationId, isCompleted, categoryId, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-          [todo.id, todo.name, todo.date ?? null, todo.time ?? null, todo.notificationId ?? null, todo.isCompleted, todo.categoryId ?? null, todo.updatedAt]
+          [
+            todo.id,
+            todo.name,
+            todo.date ?? null,
+            todo.time ?? null,
+            todo.notificationId ?? null,
+            todo.isCompleted,
+            todo.categoryId ?? null,
+            todo.updatedAt,
+          ]
         );
       }
     }
     setTimeout(() => {
-        onBackupComplete();
-    },2000);
+      onBackupComplete();
+    }, 2000);
     await AsyncStorage.setItem(`${user?.uid}-backupDone`, 'true');
   };
   useEffect(() => {
     backup();
-  })
+  });
   return (
     <ScreenContent className="flex-1 items-center justify-center">
       <Image
@@ -51,7 +60,12 @@ export default function BackupScreen({ onBackupComplete }: props) {
         className="h-64 w-64"
         resizeMode="contain"
       />
-      <Typo className="mt-4 text-center text-lg text-gray-700">Syncing your data...</Typo>
+      <Typo className="mt-4 text-center text-2xl">
+        Setting up your workspace...
+      </Typo>
+      <Typo className='mt-4 text-center text-xl'>
+      Hang tight! This may take a few moments.
+      </Typo>
     </ScreenContent>
   );
 }
