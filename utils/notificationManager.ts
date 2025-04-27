@@ -11,7 +11,7 @@ export const scheduleNotification = async (title: string, body: string, date: nu
         },
         trigger: {
             type: Notifications.SchedulableTriggerInputTypes.DATE,
-            date: new Date(date - 120000)
+            date: new Date(date - 600000)
         }
     })
     console.log('returning: ', notificationId)
@@ -29,7 +29,7 @@ export const updateNotification = async (notificationId: string, title: string, 
 
 const notificationMessages = [
     (todoName: string) => `Don't forget: ${todoName} ✅`,
-    (todoName: string) => `Quick reminder: {todoName} is waiting for you. 🐾`,
+    (todoName: string) => `Quick reminder: ${todoName} is waiting for you. 🐾`,
     (todoName: string) => `You planned: ${todoName} 🚀`,
     (todoName: string) => `Reminder: ${todoName} is waiting for you. 💪`,
     (todoName: string) => `⏰ It's time to complete: ${todoName}`,

@@ -78,3 +78,24 @@ export const updateFirebaseCategory = async (category: Category) => {
         return false
     }
 };
+
+
+export const fetchAllCategories = async () => {
+    try {
+        const user = auth().currentUser;
+        if (!user) {
+            console.log('User not authenticated');
+            return [];
+        }
+        const snapshot = await firestore()
+            .collection('users')
+            .doc(user.uid)
+            .collection('categories')
+            .get();
+        const categories: Category[] = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Category[];
+        return categories;
+    } catch (error) {
+        console.log('Error fetching categories:', error);
+        return [];
+    } 
+}

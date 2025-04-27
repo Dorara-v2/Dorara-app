@@ -1,14 +1,13 @@
 {
   "expo": {
-
     "name": "Dorara",
     "slug": "Dorara",
     "version": "1.0.0",
     "notification": {
       "icon": "./assets/notification-logo.png",
-      "color": "#000000"
+      "color": "#f3a49d"
     },
-    
+
     "web": {
       "favicon": "./assets/favicon.png"
     },
@@ -42,7 +41,11 @@
         "expo-notifications",
         {
           "icon": "./assets/notification-logo.png",
-          "color": "#000000"
+          "color": "#f3a49d",
+          "androidMode": "default",
+          "androidCollapsedTitle": "Dorara",
+          "androidImportance": "max",
+          "androidShowBadge": true
         }
       ]
     ],
@@ -52,11 +55,9 @@
     "splash": {
       "image": "./assets/adaptive-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1E1E1E"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.calc.dorara"
@@ -68,14 +69,13 @@
         "backgroundColor": "#f3a49d"
       },
       "package": "com.calc.dorara",
-      "enableDangerousExperimentalLeanBuilds": true
-
+      "enableDangerousExperimentalLeanBuilds": true,
+      "useNextNotificationsApi": true
     },
     "extra": {
       "eas": {
-        "projectId": "25e1d6be-a2af-4913-995a-bdb5f627b076"        
+        "projectId": "25e1d6be-a2af-4913-995a-bdb5f627b076"
       }
-      
     }
   }
 }

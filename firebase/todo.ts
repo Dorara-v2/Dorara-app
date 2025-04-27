@@ -94,3 +94,23 @@ export const updateFirebaseTodo = async (todo: Todo) => {
     }
 }
 
+
+export const fetchAllTodos = async () => {
+    try {
+        const user = auth().currentUser;
+        if (!user) {
+            console.log('User not authenticated');
+            return [];
+        }
+        const snapshot = await firestore()
+            .collection('users')
+            .doc(user.uid)
+            .collection('todos')
+            .get();
+        const todos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        return todos as Todo[];
+    } catch (error) {
+        console.log('Error fetching todos:', error);
+        return [];
+    }
+}

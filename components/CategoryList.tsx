@@ -18,13 +18,6 @@ type Props = {
 }
 
 export const CategoryList = ({ selectedCategory, setSelectedCategory, mode }: Props) => {
-    // const categories: Category[] = [
-    //     // { id: 'all', name: 'All', icon: 'checklist' },
-    //     { id: 'work', name: 'Work', icon: 'work' },
-    //     { id: 'personal', name: 'Personal', icon: 'person' },
-    //     { id: 'shopping', name: 'Shopping', icon: 'shopping-cart' },
-    //     { id: 'other', name: 'Other', icon: 'more-horiz' },
-    // ];
     const { colorScheme } = useColorScheme()
     const colors = getTodoScreenColors(colorScheme)
     const [isNewCategoryDialogVisible, setIsNewCategoryDialogVisible] = useState<boolean>(false)

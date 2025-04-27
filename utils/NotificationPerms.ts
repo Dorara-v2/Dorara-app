@@ -29,7 +29,7 @@ export async function setNotificationChannelAsync() {
     handleNotification: async () => ({
       shouldShowAlert: true,
       shouldPlaySound: true,
-      shouldSetBadge: false,
+      shouldSetBadge: true,
     }),
   });
 }

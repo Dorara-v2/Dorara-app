@@ -25,10 +25,8 @@ export default function DrawerNavigator() {
     const db = useSQLiteContext();
     const { setTodo, setCategory } = useTodoStore();
     const loadTodo = async () => {
-      console.log('loadtodo')
       const todos: Todo[] = await db.getAllAsync('SELECT * FROM todos');
       const categories: Category[] = await db.getAllAsync('SELECT * FROM categories');
-      console.log(todos, categories);
       setTodo(todos);
       setCategory(categories);
     }

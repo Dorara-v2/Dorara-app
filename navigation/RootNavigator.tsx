@@ -8,14 +8,18 @@ import { GUEST_USER, useUserStore } from "store/userStore"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import ScreenContent from "components/ScreenContent"
 import { Image } from "react-native"
+import BackupScreen from "screens/BackupScreen"
 
 
 export const RootNavigator = () => {
     const [initializing, setInitializing] = useState(true);
     const {user, setUser, authState, setAuthState} = useUserStore()
+    const [needsBackup, setNeedsBackup] = useState(false)
 
-    const onAuthStateChanged = (user: any) => {
+    const onAuthStateChanged = async (user: any) => {
         if(user){
+            const hasBackup = await AsyncStorage.getItem(`${user.uid}-backupDone`);
+            setNeedsBackup(!hasBackup);
             setUser(user);
             setAuthState('authenticated')
         } 
@@ -45,7 +49,12 @@ export const RootNavigator = () => {
     }
     else if(!initializing) return (
         <NavigationContainer>
-            <MainNavigator />
+            {needsBackup ? (
+                <BackupScreen onBackupComplete = {() => setNeedsBackup(false)}/>
+            ) : ( 
+                <MainNavigator />
+            )}
+            
             <GlobalLoading />
         </NavigationContainer>
     )

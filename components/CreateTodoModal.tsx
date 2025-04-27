@@ -96,7 +96,17 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
       };
       if (mode === 'create') {
         if(isReminderEnabled && newTodo.date && newTodo.time){
-          setNewTodo({ ...newTodo, notificationId: await scheduleNotification(`Reminder: ${newTodo.name}`, randomNotificationBody(newTodo.name), newTodo.time) });
+          const notificationId = await scheduleNotification(
+            `Reminder: ${newTodo.name}`,
+            randomNotificationBody(newTodo.name),
+            newTodo.time
+          )
+          await new Promise<void>((resolve) => {
+            setNewTodo((prev) => {
+              resolve();
+              return { ...prev, notificationId };
+            });
+          });
         }
         await db.runAsync(
           `INSERT INTO todos (id, name, date, time, isCompleted, notificationId, categoryId, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,

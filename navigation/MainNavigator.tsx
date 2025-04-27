@@ -12,6 +12,7 @@ import { useTodoStore } from 'store/todoStore';
 import { Category, Todo } from 'utils/types';
 import { useEffect } from 'react';
 import { requestNotificationPermission, setNotificationChannelAsync } from 'utils/NotificationPerms';
+import BackupScreen from 'screens/BackupScreen';
 
 
 export type MainStackParamList = {
