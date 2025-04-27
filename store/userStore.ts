@@ -1,5 +1,7 @@
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { SQLiteDatabase } from "expo-sqlite";
 import { Image } from "react-native";
 import { deleteDoraraFolderId } from "utils/driveDirectory/findOrCreateDoraraFolder";
 import { deleteAcessToken } from "utils/driveTokenManager";
@@ -23,19 +25,27 @@ interface UserStore {
     setAuthState: (authState: AuthState) => void;
     user: any;
     setUser: (user: any) => void;
-    signOut: () => void;
+    signOut: (db: SQLiteDatabase) => void;
 }
 
-export const useUserStore = create<UserStore>((set) => ({
+export const useUserStore = create<UserStore>((set, get) => ({
     authState: 'unauthenticated',
     setAuthState: (authState) => set({ authState }),
     user: null,
     setUser: (user) => set({ user }),
-    signOut: async () => {
+    signOut: async (db: SQLiteDatabase) => {
+        const { user } = get();
         await googleSignOut()
         await deleteUserUsagePref()
         await deleteDoraraFolderId()
         await deleteAcessToken()
+        await db.execAsync(`
+            DELETE FROM todos;
+            DELETE FROM categories;
+            DELETE FROM todo_sync;
+            DELETE FROM category_sync;  
+            `)
+        await AsyncStorage.removeItem(`${user?.uid}-backupDone`);
         set({ authState: 'unauthenticated' });
         set({ user: null });
     }
