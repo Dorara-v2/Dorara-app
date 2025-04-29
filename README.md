@@ -75,7 +75,7 @@ Dorara-app/
     - [] firebase integration
     - [] drive integration
     - [] notes editor
-- [] Bookmarks: 
+- [] Bookmarks:
     - [] local CRUD
     - [] firebase integration
     - [] extension integration
