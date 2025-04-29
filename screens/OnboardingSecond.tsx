@@ -9,8 +9,10 @@ import { onlineFlow } from "utils/onlineFlow";
 import { MaterialIcon } from "components/MaterialIcon";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { OnboardingStackParamList } from "navigation/OnboardingNavigator";
+import { useSQLiteContext } from "expo-sqlite";
 
 export default function OnboardingSecond() {
+    const db = useSQLiteContext()
     const { setAuthState, setUser } = useUserStore();
     const containerAnim = useRef(new Animated.Value(0)).current;
     const navigation = useNavigation<NavigationProp<OnboardingStackParamList>>()
@@ -96,7 +98,7 @@ export default function OnboardingSecond() {
                             <Typo color="#949191">→ Access your data across devices.</Typo>
                         </View>
                         <TouchableOpacity
-                            onPress={onlineFlow}
+                            onPress={() => onlineFlow(db)}
                             className="rounded-xl flex flex-row justify-center gap-x-3 items-center p-3 bg-[#f3a49d] mt-4"
                         >
                             <Image source={require("../assets/googleIcon.png")} className="w-6 h-6" />

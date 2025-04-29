@@ -31,7 +31,7 @@ const Stack = createStackNavigator<MainStackParamList>();
 export default function MainNavigator() {
 
   useEffect(() => {
-    loadTodo();
+    // loadTodo();
     requestNotificationPermission()
     setNotificationChannelAsync();
   }, [])
@@ -67,11 +67,3 @@ export default function MainNavigator() {
   );
 }
 
-export const loadTodo = async () => {
-  const db = useSQLiteContext();
-  const { setTodo, setCategory } = useTodoStore();
-  const todos: Todo[] = await db.getAllAsync('SELECT * FROM todos');
-  const categories: Category[] = await db.getAllAsync('SELECT * FROM categories');
-  setTodo(todos);
-  setCategory(categories);
-}

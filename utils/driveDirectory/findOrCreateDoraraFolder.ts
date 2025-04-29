@@ -64,7 +64,6 @@ export async function setupOnlineDrive() {
   if (folderId) {
     await setDoraraFolderId(folderId);
     console.log('Dorara Drive folder is ready:', folderId);
-  } else {
-    console.warn('Failed to setup Dorara folder');
-  }
+  } 
+  return folderId;
 }

@@ -9,10 +9,10 @@ import NotesScreen from "screens/NotesScreen";
 import { getDrawerColors } from "utils/colors";
 import { TaskTodoNavigation } from "./TaskTodoNavigation";
 import { useEffect } from "react";
-import { loadTodo } from "./MainNavigator";
 import { useSQLiteContext } from "expo-sqlite";
 import { useTodoStore } from "store/todoStore";
-import { Category, Todo } from "utils/types";
+import { Category, Folder, Note, Todo } from "utils/types";
+import { useNotesStore } from "store/notesStore";
 
 
 
@@ -24,14 +24,22 @@ export default function DrawerNavigator() {
     const Colors = getDrawerColors(colorScheme)
     const db = useSQLiteContext();
     const { setTodo, setCategory } = useTodoStore();
+    const { setNotes, setFolders } = useNotesStore();
     const loadTodo = async () => {
       const todos: Todo[] = await db.getAllAsync('SELECT * FROM todos');
       const categories: Category[] = await db.getAllAsync('SELECT * FROM categories');
       setTodo(todos);
       setCategory(categories);
     }
+    const loadNotes = async () => {
+      const notes: Note[] = await db.getAllAsync('SELECT * FROM notes');
+      const folders: Folder[] = await db.getAllAsync('SELECT * FROM folders');
+      setNotes(notes);
+      setFolders(folders);
+    }
     useEffect(() => {
         loadTodo()
+        loadNotes()
     },[db])
   return (
     <Drawer.Navigator
@@ -94,3 +102,4 @@ export default function DrawerNavigator() {
     </Drawer.Navigator>
   );
 }
+

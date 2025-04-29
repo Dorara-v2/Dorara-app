@@ -11,6 +11,7 @@ import { createFolder } from "utils/offlineDirectory/createFolder";
 import { useLoadingStore } from "store/loadingStore";
 import { MaterialIcon } from "components/MaterialIcon";
 import { NothingHere } from "components/NothingHere";
+import { createDriveFolder } from "utils/driveDirectory/createFolder";
 export default function NotesScreen() {
     const { setContent, setLoading } = useLoadingStore();
     const { colorScheme } = useColorScheme();
@@ -79,7 +80,7 @@ export default function NotesScreen() {
         loadFolders();
     }, [currentDirectory]);
 
-    const handleCreate = (name: string) => {
+    const handleCreate = async (name: string) => {
         if (createType === "folder") {
             createFolder(`${relativePath}/${name}`).then((success) => {
                 if(!success) Alert.alert("Folder already exists", "Please choose a different name", [{}]);

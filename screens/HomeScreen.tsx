@@ -8,6 +8,10 @@ import { useUserStore } from 'store/userStore';
 import { onlineFlow } from 'utils/onlineFlow';
 import * as Notifications from 'expo-notifications';
 import { useSQLiteContext } from 'expo-sqlite';
+import { createDriveFolder } from 'utils/driveDirectory/createFolder';
+import { getDoraraFolderId } from 'utils/driveDirectory/findOrCreateDoraraFolder';
+import { useEffect } from 'react';
+import { useNotesStore } from 'store/notesStore';
 export default function HomeScreen() {
   const { setLoading, setContent } = useLoadingStore();
   const { user, signOut } = useUserStore();
@@ -15,24 +19,13 @@ export default function HomeScreen() {
   // console.log(auth().currentUser);
   const db = useSQLiteContext()
 
-  const scheduleNotification = async () => {
-    try {
-      const id = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Hello!',
-          body: 'This is a test notification.',
-        },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.DATE,
-          date: new Date(Date.now() + 1000),
-        },
-      });
-      console.log(await Notifications.getAllScheduledNotificationsAsync());
-    } catch (error) {
-      console.log('Error scheduling notification:', error);
-    }
-  };
-
+  
+  // getDoraraFolderId().then(id => console.log(id))
+  // useEffect(() => {
+  //   createDriveFolder('new folder', '1B_fCdOUWG8TCTdiPE9CEF7Lwp3SnBYTz')
+  // },[])
+  const { folders } = useNotesStore();
+  console.log(folders);
   return (
     <ScreenContent>
       <TouchableOpacity
@@ -52,7 +45,7 @@ export default function HomeScreen() {
           Sign Out
         </Typo>
       </TouchableOpacity>
-      <TouchableOpacity onPress={onlineFlow} className="mb-4 rounded-xl bg-[#f3a49d] px-6 py-4">
+      <TouchableOpacity onPress={() => onlineFlow(db)} className="mb-4 rounded-xl bg-[#f3a49d] px-6 py-4">
         <Typo color="#000" className="text-center text-lg font-bold text-white">
           Sign in
         </Typo>
@@ -64,13 +57,13 @@ export default function HomeScreen() {
           Terms of services
         </Typo>
       </TouchableOpacity>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={scheduleNotification}
         className="mb-4 rounded-xl bg-[#f3a49d] px-6 py-4">
         <Typo color="#000" className="text-center text-lg font-bold text-white">
           Schedule Notification
         </Typo>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </ScreenContent>
   );
 }

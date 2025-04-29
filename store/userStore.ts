@@ -44,6 +44,10 @@ export const useUserStore = create<UserStore>((set, get) => ({
             DELETE FROM categories;
             DELETE FROM todo_sync;
             DELETE FROM category_sync;  
+            DELETE FROM folders;
+            DELETE FROM notes;
+            DELETE FROM folder_sync;
+            DELETE FROM note_sync;
             `)
         await AsyncStorage.removeItem(`${user?.uid}-backupDone`);
         set({ authState: 'unauthenticated' });

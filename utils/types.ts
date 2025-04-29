@@ -20,4 +20,22 @@ export interface Category {
     icon?: string;
 }
 
+export interface Note {
+    id: string;
+    name: string;
+    localPath: string;
+    driveId?: string;
+    createdAt: number;
+    updatedAt: number;
+}
+
+export interface Folder {
+    id: string;
+    name: string;
+    localPath: string;
+    driveId?: string;
+    createdAt: number;
+    updatedAt: number;
+}
+
 export type MaterialIconName = keyof typeof MaterialIcons.glyphMap
