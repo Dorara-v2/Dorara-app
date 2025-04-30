@@ -67,7 +67,7 @@ Dorara-app/
     - [x] Local CRUD
     - [x] Firebase integration
     - [x] Firebase backup on login
-    - [] Notifications
+    - [ ] Notifications
     - [x] editable todo and category
 
 - [ ] Notes: 
