@@ -62,7 +62,7 @@ Dorara-app/
 
 ## Roadmap
 
-- [] Todo:
+- [ ] Todo:
     - [x] categories
     - [x] Local CRUD
     - [x] Firebase integration
@@ -70,28 +70,28 @@ Dorara-app/
     - [] Notifications
     - [x] editable todo and category
 
-- [] Notes: 
+- [ ] Notes: 
     - [x] local file/folder CRUD
-    - [] firebase integration
-    - [] drive integration
-    - [] notes editor
-- [] Bookmarks:
-    - [] local CRUD
-    - [] firebase integration
-    - [] extension integration
-    - [] webview
-- [] expense: 
-    - [] categories
-    - [] local CRUD
-    - [] firebase integration
-    - [] budgeting
-    - [] monthly autopay
-- [] routines: 
-    - [] local crud
-    - [] integration with todos
-    - [] firebase integration
-    - [] repeatation
-    - [] track progress
+    - [x] firebase integration
+    - [x] drive integration
+    - [ ] notes editor
+- [ ] Bookmarks:
+    - [ ] local CRUD
+    - [ ] firebase integration
+    - [ ] extension integration
+    - [ ] webview
+- [ ] expense: 
+    - [ ] categories
+    - [ ] local CRUD
+    - [ ] firebase integration
+    - [ ] budgeting
+    - [ ] monthly autopay
+- [ ] routines: 
+    - [ ] local crud
+    - [ ] integration with todos
+    - [ ] firebase integration
+    - [ ] repeatation
+    - [ ] track progress
 
 ---   
 
