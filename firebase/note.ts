@@ -32,3 +32,22 @@ export const deleteFirebaseNote = async (noteId: string) => {
         return false;
     }
 }
+
+export const fetchAllNotes = async (): Promise<Note[]> => {
+    const user = auth().currentUser;
+    if (!user) {
+        console.log('User not authenticated');
+        return [];
+    };
+    try {
+        const snapshot = await firestore().collection('users').doc(user.uid).collection('notes').get();
+        const notes: Note[] = [];
+        snapshot.forEach(doc => {
+            notes.push({ id: doc.id, ...doc.data() } as Note);
+        });
+        return notes;
+    } catch (error) {
+        console.log("Error fetching notes from Firebase:", error);
+        return [];
+    }
+}

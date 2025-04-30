@@ -6,8 +6,12 @@ import { fetchAllCategories } from 'firebase/category';
 import { fetchAllTodos } from 'firebase/todo';
 import React, { useEffect } from 'react';
 import { Text, View, Image } from 'react-native';
-import { Category, Todo } from 'utils/types';
+import { Category, Folder, Note, Todo } from 'utils/types';
 import auth from '@react-native-firebase/auth';
+import { fetchAllFolders } from 'firebase/folder';
+import { createLocalFolder } from 'utils/offlineDirectory/createFolder';
+import { fetchAllNotes } from 'firebase/note';
+import { createLocalFile } from 'utils/offlineDirectory/createFiles';
 
 type props = {
   onBackupComplete: () => void;
@@ -45,9 +49,46 @@ export default function BackupScreen({ onBackupComplete }: props) {
         );
       }
     }
+    const folders: Folder[] = await fetchAllFolders();
+    if (folders.length > 0) {
+      for (const folder of folders) {
+        await db.runAsync(
+          `INSERT OR REPLACE INTO folders (id, name, localPath, driveId, parentId, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [
+            folder.id,
+            folder.name,
+            folder.localPath,
+            folder.driveId ?? null,
+            folder.parentId ?? null,
+            folder.createdAt,
+            folder.updatedAt,
+          ]
+        );
+        await createLocalFolder(folder.localPath)
+      }
+    }
+    const notes: Note[] = await fetchAllNotes()
+    if (notes.length > 0) {
+      for (const note of notes) {
+        await db.runAsync(
+          `INSERT OR REPLACE INTO notes (id, name, localPath, driveId, parentId, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [
+            note.id,
+            note.name,
+            note.localPath,
+            note.driveId ?? null,
+            note.parentId ?? null,
+            note.createdAt,
+            note.updatedAt,
+          ]
+        );
+        await createLocalFile(note.localPath)
+      }
+    }
     setTimeout(() => {
       onBackupComplete();
     }, 2000);
+
     await AsyncStorage.setItem(`${user?.uid}-backupDone`, 'true');
   };
   useEffect(() => {

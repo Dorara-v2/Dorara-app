@@ -140,7 +140,7 @@ export default function NotesScreen() {
             return;
         }
         const id = uuid.v4() as string;
-        await createLocalFile(name+'.md', selectedFolder.localPath);
+        await createLocalFile(selectedFolder.localPath+name+'.md');
         const {success, fileId} = await createDriveFile(name, selectedFolder.driveId as string);
         await db.runAsync(
             `
@@ -218,7 +218,6 @@ export default function NotesScreen() {
   };
 
   useEffect(() => {});
-  console.log(notes)
   return (
     <ScreenContent>
       <View className="flex flex-row items-center justify-start p-4">
@@ -251,14 +250,8 @@ export default function NotesScreen() {
           </>
         )}
         ListEmptyComponent={
-          isLoading ? (
-            <View className="flex-1 items-center justify-center py-8">
-              <ActivityIndicator size="large" color="#f3a49d" />
-              <Typo className="mt-4 text-lg">Loading folders...</Typo>
-            </View>
-          ) : (
+          
             <NothingHere />
-          )
         }
         refreshing={isLoading}
         showsVerticalScrollIndicator={false}

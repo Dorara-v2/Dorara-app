@@ -108,15 +108,27 @@ export const FolderItem = ({
           DELETE FROM folders WHERE id = ?`, [
           file.id,
         ]);
-        await deleteDriveFileFolder(file.driveId!);
-        await deleteFirebaseFolder(file.id);
+        const driveDeletion = await deleteDriveFileFolder(file.driveId!);
+        const firebaseDeletion = await deleteFirebaseFolder(file.id);
+        if(!driveDeletion || !firebaseDeletion) {
+          console.error('Error deleting folder from drive or Firebase');
+          await db.runAsync(`
+              INSERT INTO folder_sync id, operation, updatedAt, source VALUES (?, ?, ?, ?)`
+              ,[file.id, 'delete', Date.now(), 'local']);
+        }
       } else if (file.type === 'note') {
         await db.runAsync(`
           DELETE FROM notes WHERE id = ?`, [
           file.id,
         ]);
-        await deleteDriveFileFolder(file.driveId!);
-        await deleteFirebaseNote(file.id);
+        const driveDeletion = await deleteDriveFileFolder(file.driveId!);
+        const firebaseDeletion = await deleteFirebaseNote(file.id);
+        if(!driveDeletion || !firebaseDeletion) {
+          console.error('Error deleting note from drive or Firebase');
+          await db.runAsync(`
+              INSERT INTO note_sync id, operation, updatedAt, source VALUES (?, ?, ?, ?)`
+              ,[file.id, 'delete', Date.now(), 'local']);
+        }
       }
       await loadFolders();
       setSelectedFolder((curr) => curr);
@@ -153,7 +165,7 @@ export const FolderItem = ({
 
       {menuVisible && (
         <Animated.View
-          className="absolute z-10 self-end top-0 rounded-lg w-48"
+          className="relative z-10 self-start top-0 rounded-lg w-full"
           style={{
             backgroundColor: colorScheme === 'dark' ? '#1f1f1f' : 'white',
             elevation: 5,

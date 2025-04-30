@@ -60,3 +60,19 @@ export const deleteFirebaseFolder = async (folderId: string) => {
         return false;
     }
 }
+
+export const fetchAllFolders = async (): Promise<Folder[]> => {
+    const user = auth().currentUser;
+    if (!user) {
+        console.log('User not authenticated');
+        return [];
+    };
+    try {
+        const snapshot = await firestore().collection('users').doc(user.uid).collection('folders').get();
+        const folders = snapshot.docs.map(doc => doc.data());
+        return folders as Folder[];
+    } catch (error) {
+        console.log("Error fetching folders in Firebase:", error);
+        return [];
+    }
+}
