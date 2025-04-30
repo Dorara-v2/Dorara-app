@@ -1,13 +1,14 @@
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { getDriveAccessToken } from 'utils/driveTokenManager';
 
 export const createDriveFolder = async (
   folderName: string,
   parentFolderId: string
-): Promise<boolean> => {
-  const token = await getDriveAccessToken();
+): Promise<{success:boolean, folderId: string | null}> => {
+  const token = (await GoogleSignin.getTokens()).accessToken;
   if (!token) {
     console.log('No token found');
-    return false;
+    return {success: false, folderId: null};
   }
   try {
     const response = await fetch('https://www.googleapis.com/drive/v3/files', {
@@ -25,12 +26,12 @@ export const createDriveFolder = async (
     const json = await response.json();
     if (json.error) {
       console.log('Error creating folder:', json.error);
-      return false;
+      return {success: false, folderId: null};
     }
     console.log('Folder created:', json);
-    return true;
+    return {success: true, folderId: json.id};
   } catch (error) {
     console.log('Error creating folder:', error);
-    return false;
+    return {success: false, folderId: null};
   }
 };

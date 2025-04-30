@@ -22,7 +22,7 @@ export default function NoteEditor() {
 
     const saveContent = async () => {
         try {
-            const filePath = `${NOTES_BASE_PATH}${path}/${filename}`;
+            const filePath = `${path}/${filename}.md`;
             await FileSystem.writeAsStringAsync(filePath, noteContent);
             ToastAndroid.show('File saved successfully', ToastAndroid.SHORT);
         } catch (error) {

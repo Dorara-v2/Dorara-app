@@ -5,9 +5,9 @@ import { NOTES_BASE_PATH } from './createDoraraFolder';
 export const deleteFolder = async (relativePath: string) => {
     // console.log("Deleting folder:", relativePath);
     try {
-        const dirInfo = await FileSystem.getInfoAsync(`${NOTES_BASE_PATH}/${relativePath}`);
+        const dirInfo = await FileSystem.getInfoAsync(`/${relativePath}`);
         if (dirInfo.exists) {
-            await FileSystem.deleteAsync(`${NOTES_BASE_PATH}/${relativePath}`, { idempotent: true });
+            await FileSystem.deleteAsync(`/${relativePath}`, { idempotent: true });
             // console.log("Folder deleted successfully");
         } else {
             // console.log("Folder does not exist");

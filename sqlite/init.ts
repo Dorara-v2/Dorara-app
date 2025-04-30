@@ -26,7 +26,7 @@ export const initDB = async () => {
             name TEXT NOT NULL,
             localPath TEXT,
             driveId TEXT,
-            folderId TEXT,
+            parentId TEXT,
             createdAt INTEGER,
             updatedAt INTEGER
         );
@@ -35,7 +35,7 @@ export const initDB = async () => {
             name TEXT NOT NULL,
             localPath TEXT,
             driveId TEXT,
-            folderId TEXT,
+            parentId TEXT,
             createdAt INTEGER,
             updatedAt INTEGER
         );

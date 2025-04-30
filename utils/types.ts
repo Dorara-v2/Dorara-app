@@ -25,6 +25,8 @@ export interface Note {
     name: string;
     localPath: string;
     driveId?: string;
+    parentId?: string;
+    type: "note";
     createdAt: number;
     updatedAt: number;
 }
@@ -34,6 +36,8 @@ export interface Folder {
     name: string;
     localPath: string;
     driveId?: string;
+    parentId?: string;
+    type: "folder"
     createdAt: number;
     updatedAt: number;
 }

@@ -8,3 +8,4 @@ export const setUserUsagePref = async (pref: string) => {
 export const deleteUserUsagePref = async () => {
     await AsyncStorage.removeItem('userUsagePref');
 }
+

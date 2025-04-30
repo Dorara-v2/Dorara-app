@@ -48,7 +48,8 @@
           "androidShowBadge": true
         }
       ]
-    ],
+    ]
+    ,
     "orientation": "portrait",
     "icon": "./assets/adaptive-icon.png",
     "userInterfaceStyle": "light",

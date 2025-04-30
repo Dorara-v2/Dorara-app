@@ -34,8 +34,10 @@ export default function DrawerNavigator() {
     const loadNotes = async () => {
       const notes: Note[] = await db.getAllAsync('SELECT * FROM notes');
       const folders: Folder[] = await db.getAllAsync('SELECT * FROM folders');
-      setNotes(notes);
-      setFolders(folders);
+      folders.map(folder => folder.type = 'folder')
+      notes.map(note => note.type = 'note')
+      setNotes(notes as Note[]);
+      setFolders(folders as Folder[]);
     }
     useEffect(() => {
         loadTodo()

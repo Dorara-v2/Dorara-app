@@ -19,16 +19,16 @@ export const onlineFlow = async (db :SQLiteDatabase) => {
           name, 
           localPath, 
           driveId, 
-          folderId, 
+          parentId, 
           createdAt, 
           updatedAt
       ) VALUES (?, ?, ?, ?, ?, ?, ?)
     `, [
-        doraraFolderId,
+        'baseNotesFolder',
         "Dorara",
         `${FileSystem.documentDirectory}Dorara/notes/`,
         doraraFolderId,
-        doraraFolderId,
+        null,
         Date.now(),
         Date.now()
     ]);

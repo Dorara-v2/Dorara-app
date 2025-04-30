@@ -25,7 +25,7 @@ export default function HomeScreen() {
   //   createDriveFolder('new folder', '1B_fCdOUWG8TCTdiPE9CEF7Lwp3SnBYTz')
   // },[])
   const { folders } = useNotesStore();
-  console.log(folders);
+  // console.log(folders);
   return (
     <ScreenContent>
       <TouchableOpacity
