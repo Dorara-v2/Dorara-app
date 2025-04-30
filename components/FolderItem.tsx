@@ -13,7 +13,7 @@ import { MaterialIcon } from './MaterialIcon';
 import { Folder, Note } from 'utils/types';
 import { useSQLiteContext } from 'expo-sqlite';
 import { deleteDriveFileFolder } from 'utils/driveDirectory/deleteFileFolder';
-import { deleteFirebaseFolder } from 'firebase/folder';
+import { deleteAllChildren, deleteFirebaseFolder } from 'firebase/folder';
 import { deleteFirebaseNote } from 'firebase/note';
 import { useLoadingStore } from 'store/loadingStore';
 
@@ -110,6 +110,7 @@ export const FolderItem = ({
         ]);
         const driveDeletion = await deleteDriveFileFolder(file.driveId!);
         const firebaseDeletion = await deleteFirebaseFolder(file.id);
+        await deleteAllChildren(file.id)
         if(!driveDeletion || !firebaseDeletion) {
           console.error('Error deleting folder from drive or Firebase');
           await db.runAsync(`
