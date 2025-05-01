@@ -56,7 +56,7 @@
     "splash": {
       "image": "./assets/adaptive-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1E1E1E"
+      "backgroundColor": "#f3a49d"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
