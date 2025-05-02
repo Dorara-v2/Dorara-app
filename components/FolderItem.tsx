@@ -73,12 +73,13 @@ export const FolderItem = ({
       setSelectedFolder(file);
     } else {
       try {
-        const filePath = `${currentPath}/${file.name}.md`;
+        const filePath = `${currentPath}/${file.name}.html`;
         const content = await FileSystem.readAsStringAsync(filePath);
         navigation.navigate('NoteEditor', {
           filename: file.name,
           content,
           path: currentPath,
+          file: file
         });
       } catch (error) {
         console.error('Error reading file:', error);
@@ -102,7 +103,7 @@ export const FolderItem = ({
     setLoading(true);
     try {
       const filePath = `${currentPath}${file.name}`;
-      await FileSystem.deleteAsync(file.type === 'folder' ? filePath : `${filePath}.md`);
+      await FileSystem.deleteAsync(file.type === 'folder' ? filePath : `${filePath}.html`);
       if (file.type === 'folder') {
         await db.runAsync(`
           DELETE FROM folders WHERE id = ?`, [
@@ -145,8 +146,8 @@ export const FolderItem = ({
 
   const displayName = file.type === 'folder'
     ? file.name
-    : file.name.endsWith('.md')
-    ? file.name.slice(0, -3)
+    : file.name.endsWith('.html')
+    ? file.name.slice(0, -5)
     : file.name;
 
   return (

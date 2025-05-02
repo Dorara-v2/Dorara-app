@@ -1,5 +1,6 @@
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { getDriveAccessToken } from 'utils/driveTokenManager';
+import { findDoraraFolderId } from './findOrCreateDoraraFolder';
 
 export const createDriveFolder = async (
   folderName: string,
@@ -10,6 +11,9 @@ export const createDriveFolder = async (
     console.log('No token found');
     return {success: false, folderId: null};
   }
+  if (!parentFolderId) {
+              parentFolderId = await findDoraraFolderId() as string
+          }
   try {
     const response = await fetch('https://www.googleapis.com/drive/v3/files', {
       method: 'POST',

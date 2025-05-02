@@ -8,7 +8,7 @@ export const createFirebaseNote = async (note: Note) => {
         console.log('User not authenticated');
         return false;
     };
-    // const localPath = `${FileSystem.documentDirectory}Dorara/notes/${note.name}.md`;
+    // const localPath = `${FileSystem.documentDirectory}Dorara/notes/${note.name}.html`;
     try {
         await firestore().collection('users').doc(user.uid).collection('notes').doc(note.id).set(note);
         return true;

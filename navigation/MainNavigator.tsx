@@ -9,7 +9,7 @@ import { MaterialIcon } from 'components/MaterialIcon';
 import TermsOfServiceScreen from 'screens/TermsOfService';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useTodoStore } from 'store/todoStore';
-import { Category, Todo } from 'utils/types';
+import { Category, Note, Todo } from 'utils/types';
 import { useEffect } from 'react';
 import { requestNotificationPermission, setNotificationChannelAsync } from 'utils/NotificationPerms';
 import BackupScreen from 'screens/BackupScreen';
@@ -21,7 +21,8 @@ export type MainStackParamList = {
   NoteEditor: {
     filename: string;
     content: string;
-    path: string
+    path: string;
+    file: Note;
   }
   TermsOfServices: undefined
 }

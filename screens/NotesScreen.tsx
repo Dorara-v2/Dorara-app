@@ -32,7 +32,7 @@ export default function NotesScreen() {
   const { setContent, setLoading, isLoading } = useLoadingStore();
   const { colorScheme } = useColorScheme();
   const db = useSQLiteContext();
-  const { folders, notes, setFolders, setNotes } = useNotesStore();
+  const { folders, notes, setFolders, setNotes, addNote, addFolder } = useNotesStore();
   const [selectedFolder, setSelectedFolder] = useState<Folder>(
     folders.find((folder) => folder.parentId === null) || folders[0]
   );
@@ -108,6 +108,16 @@ export default function NotesScreen() {
             Date.now(),
           ]
         );
+        addFolder({
+          id,
+          name,
+          localPath: selectedFolder.localPath + name + '/',
+          driveId: success ? folderId : null,
+          parentId: selectedFolder.id,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        })
+        setLoading(false);
         const addedToFirebase = await createFirebaseFolder({
             id,
             name,
@@ -140,7 +150,8 @@ export default function NotesScreen() {
             return;
         }
         const id = uuid.v4() as string;
-        await createLocalFile(selectedFolder.localPath+name+'.md');
+        
+        await createLocalFile(selectedFolder.localPath+name+'.html');
         const {success, fileId} = await createDriveFile(name, selectedFolder.driveId as string);
         await db.runAsync(
             `
@@ -157,17 +168,27 @@ export default function NotesScreen() {
             [
                 id,
                 name,
-                selectedFolder.localPath + name + '.md',
+                selectedFolder.localPath + name + 'html',
                 success ? fileId : null,
                 selectedFolder.id,
                 Date.now(),
                 Date.now(),
             ]
         );
+        addNote({
+            id,
+            name,
+            localPath: selectedFolder.localPath + name + '.html',
+            driveId: success ? fileId : null,
+            parentId: selectedFolder.id,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+        })
+        setLoading(false);
         const addedToFirebase = await createFirebaseNote({
             id,
             name,
-            localPath: selectedFolder.localPath + name + '.md',
+            localPath: selectedFolder.localPath + name + '.html',
             driveId: success ? fileId : null,
             parentId: selectedFolder.id,
             createdAt: Date.now(),
@@ -216,7 +237,6 @@ export default function NotesScreen() {
   if (index === -1) return path;
   return path.slice(index + keyword.length);
   };
-
   useEffect(() => {});
   return (
     <ScreenContent>

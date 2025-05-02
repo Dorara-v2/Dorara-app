@@ -50,3 +50,11 @@ if (!loaded) {
   </>
   );
 }
+
+
+// proxy 
+
+// systemProp.http.proxyHost=172.31.2.3
+// systemProp.http.proxyPort=8080
+// systemProp.https.proxyHost=172.31.2.3
+// systemProp.https.proxyPort=8080
