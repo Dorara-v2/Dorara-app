@@ -5,8 +5,10 @@ import { signInWithGoogle } from './googleOauth';
 import { ensureBaseNotesFolder } from './offlineDirectory/createDoraraFolder';
 import * as FileSystem from 'expo-file-system';
 import { createFirebaseBaseFolder } from 'firebase/folder';
+import { getDb } from 'sqlite/init';
 
-export const onlineFlow = async (db: SQLiteDatabase) => {
+export const onlineFlow = async () => {
+  const db = await getDb();
   await signInWithGoogle();
   await setUserUsagePref('online');
   await ensureBaseNotesFolder();
@@ -39,4 +41,5 @@ export const onlineFlow = async (db: SQLiteDatabase) => {
   } catch (error) {
     console.log('Error inserting base folder in db:', error);
   }
+  await db.closeAsync();
 };

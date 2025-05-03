@@ -9,11 +9,12 @@ import { CreateDialog } from './CreateDialog';
 import { DeleteDialog } from './DeleteDialog';
 import { MaterialIcon } from './MaterialIcon';
 import { Folder, Note } from 'utils/types';
-import { useSQLiteContext } from 'expo-sqlite';
 import { deleteDriveFileFolder } from 'utils/driveDirectory/deleteFileFolder';
 import { deleteAllChildren, deleteFirebaseFolder } from 'firebase/folder';
 import { deleteFirebaseNote } from 'firebase/note';
 import { useLoadingStore } from 'store/loadingStore';
+import { deleteFolderInDb, insertIntoFolderSync } from 'sqlite/folder';
+import { deleteNoteInDb, insertIntoNoteSync } from 'sqlite/note';
 
 type FolderItemProps = {
   file: Folder | Note;
@@ -36,7 +37,6 @@ export const FolderItem = ({
   const { colorScheme } = useColorScheme();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   const { setLoading, setContent } = useLoadingStore();
-  const db = useSQLiteContext();
 
   const slideAnimation = useRef(new Animated.Value(0)).current;
   const opacityAnimation = useRef(new Animated.Value(0)).current;
@@ -86,7 +86,6 @@ export const FolderItem = ({
   };
 
   const handleRename = async (name: string) => {
-    // TODO: Implement rename functionality
     console.log(name);
 
     setMenuVisible(false);
@@ -99,37 +98,21 @@ export const FolderItem = ({
       const filePath = `${currentPath}${file.name}`;
       await FileSystem.deleteAsync(file.type === 'folder' ? filePath : `${filePath}.html`);
       if (file.type === 'folder') {
-        await db.runAsync(
-          `
-          DELETE FROM folders WHERE id = ?`,
-          [file.id]
-        );
+        await deleteFolderInDb(file.id);
         const driveDeletion = await deleteDriveFileFolder(file.driveId!);
         const firebaseDeletion = await deleteFirebaseFolder(file.id);
         await deleteAllChildren(file.id);
         if (!driveDeletion || !firebaseDeletion) {
           console.error('Error deleting folder from drive or Firebase');
-          await db.runAsync(
-            `
-              INSERT INTO folder_sync id, operation, updatedAt, source VALUES (?, ?, ?, ?)`,
-            [file.id, 'delete', Date.now(), 'local']
-          );
+          await insertIntoFolderSync(file.id, 'delete', 'local');
         }
       } else if (file.type === 'note') {
-        await db.runAsync(
-          `
-          DELETE FROM notes WHERE id = ?`,
-          [file.id]
-        );
+        await deleteNoteInDb(file.id)
         const driveDeletion = await deleteDriveFileFolder(file.driveId!);
         const firebaseDeletion = await deleteFirebaseNote(file.id);
         if (!driveDeletion || !firebaseDeletion) {
           console.error('Error deleting note from drive or Firebase');
-          await db.runAsync(
-            `
-              INSERT INTO note_sync id, operation, updatedAt, source VALUES (?, ?, ?, ?)`,
-            [file.id, 'delete', Date.now(), 'local']
-          );
+          await insertIntoNoteSync(file.id, 'delete', 'local');
         }
       }
       await loadFolders();

@@ -102,7 +102,7 @@ export default function OnboardingSecond() {
               <Typo color="#949191">→ Access your data across devices.</Typo>
             </View>
             <TouchableOpacity
-              onPress={() => onlineFlow(db)}
+              onPress={() => onlineFlow()}
               className="mt-4 flex flex-row items-center justify-center gap-x-3 rounded-xl bg-[#f3a49d] p-3">
               <Image source={require('../assets/googleIcon.png')} className="h-6 w-6" />
               <Typo className="text-lg font-bold ">Sign in with Google</Typo>

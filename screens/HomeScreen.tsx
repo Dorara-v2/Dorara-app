@@ -27,14 +27,14 @@ export default function HomeScreen() {
       <Typo className="text-center text-3xl font-bold">{user.displayName}</Typo>
       <Image src={user.photoURL} className="mx-auto mt-4 h-24 w-24 rounded-full" />
       <TouchableOpacity
-        onPress={() => signOut(db)}
+        onPress={() => signOut()}
         className="mb-4 rounded-xl bg-[#f3a49d] px-6 py-4">
         <Typo color="#000" className="text-center text-lg font-bold text-white">
           Sign Out
         </Typo>
       </TouchableOpacity>
       <TouchableOpacity
-        onPress={() => onlineFlow(db)}
+        onPress={() => onlineFlow()}
         className="mb-4 rounded-xl bg-[#f3a49d] px-6 py-4">
         <Typo color="#000" className="text-center text-lg font-bold text-white">
           Sign in

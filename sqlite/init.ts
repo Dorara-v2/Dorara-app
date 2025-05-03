@@ -64,3 +64,8 @@ export const initDB = async () => {
         );
         `);
 };
+
+export const getDb = async (): Promise<SQLite.SQLiteDatabase> => {
+    const db = await SQLite.openDatabaseAsync('Dorara.db');
+    return db;
+}

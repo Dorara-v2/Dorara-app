@@ -18,6 +18,8 @@ import uuid from 'react-native-uuid';
 import { createDriveFile } from 'utils/driveDirectory/createFile';
 import { createFirebaseFolder } from 'firebase/folder';
 import { createFirebaseNote } from 'firebase/note';
+import { createFolderInDb, insertIntoFolderSync } from 'sqlite/folder';
+import { createNoteInDb } from 'sqlite/note';
 export default function NotesScreen() {
   const { setContent, setLoading, isLoading } = useLoadingStore();
   const { colorScheme } = useColorScheme();
@@ -76,32 +78,34 @@ export default function NotesScreen() {
           name,
           selectedFolder.driveId as string
         );
-        await db.runAsync(
-          `
-                    INSERT INTO folders (
-                        id, 
-                        name, 
-                        localPath, 
-                        driveId, 
-                        parentId, 
-                        createdAt, 
-                        updatedAt
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?)
-                `,
-          [
-            id,
-            name,
-            selectedFolder.localPath + name + '/',
-            success ? folderId : null,
-            selectedFolder.id,
-            Date.now(),
-            Date.now(),
-          ]
-        );
+        // await db.runAsync(
+        //   `
+        //             INSERT INTO folders (
+        //                 id, 
+        //                 name, 
+        //                 localPath, 
+        //                 driveId, 
+        //                 parentId, 
+        //                 createdAt, 
+        //                 updatedAt
+        //             ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        //         `,
+        //   [
+        //     id,
+        //     name,
+        //     selectedFolder.localPath + name + '/',
+        //     success ? folderId : null,
+        //     selectedFolder.id,
+        //     Date.now(),
+        //     Date.now(),
+        //   ]
+        // );
+        await createFolderInDb(id, name, selectedFolder, success ? folderId : null);
         addFolder({
           id,
           name,
           localPath: selectedFolder.localPath + name + '/',
+          type: 'folder',
           driveId: success ? folderId : null,
           parentId: selectedFolder.id,
           createdAt: Date.now(),
@@ -118,17 +122,7 @@ export default function NotesScreen() {
           updatedAt: Date.now(),
         });
         if (!success || !addedToFirebase) {
-          await db.runAsync(
-            `
-                        INSERT INTO folder_sync (
-                            id, 
-                            operation, 
-                            updatedAt, 
-                            source
-                        ) VALUES (?, ?, ?, ?)
-                    `,
-            [id, 'create', Date.now(), 'local']
-          );
+          await insertIntoFolderSync(id, 'create', 'local');
         }
       } else {
         const noteExists = notes.some(
@@ -143,34 +137,36 @@ export default function NotesScreen() {
 
         await createLocalFile(selectedFolder.localPath + name + '.html');
         const { success, fileId } = await createDriveFile(name, selectedFolder.driveId as string);
-        await db.runAsync(
-          `
-                    INSERT INTO notes (
-                        id, 
-                        name, 
-                        localPath, 
-                        driveId, 
-                        parentId, 
-                        createdAt, 
-                        updatedAt
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?)
-                `,
-          [
-            id,
-            name,
-            selectedFolder.localPath + name + 'html',
-            success ? fileId : null,
-            selectedFolder.id,
-            Date.now(),
-            Date.now(),
-          ]
-        );
+        // await db.runAsync(
+        //   `
+        //             INSERT INTO notes (
+        //                 id, 
+        //                 name, 
+        //                 localPath, 
+        //                 driveId, 
+        //                 parentId, 
+        //                 createdAt, 
+        //                 updatedAt
+        //             ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        //         `,
+        //   [
+        //     id,
+        //     name,
+        //     selectedFolder.localPath + name + 'html',
+        //     success ? fileId : null,
+        //     selectedFolder.id,
+        //     Date.now(),
+        //     Date.now(),
+        //   ]
+        // );
+        await createNoteInDb(id, name, selectedFolder, success ? fileId : null);
         addNote({
           id,
           name,
           localPath: selectedFolder.localPath + name + '.html',
           driveId: success ? fileId : null,
           parentId: selectedFolder.id,
+          type: 'note',
           createdAt: Date.now(),
           updatedAt: Date.now(),
         });

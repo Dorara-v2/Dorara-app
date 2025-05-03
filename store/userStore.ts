@@ -7,6 +7,7 @@ import { deleteUserUsagePref } from 'utils/extra';
 import { googleSignOut } from 'utils/googleOauth';
 import { create } from 'zustand';
 import * as FileSystem from 'expo-file-system';
+import { getDb } from 'sqlite/init';
 
 export const GUEST_USER = {
   uid: 'guest',
@@ -23,7 +24,7 @@ interface UserStore {
   setAuthState: (authState: AuthState) => void;
   user: any;
   setUser: (user: any) => void;
-  signOut: (db: SQLiteDatabase) => void;
+  signOut: () => void;
 }
 
 export const useUserStore = create<UserStore>((set, get) => ({
@@ -31,8 +32,9 @@ export const useUserStore = create<UserStore>((set, get) => ({
   setAuthState: (authState) => set({ authState }),
   user: null,
   setUser: (user) => set({ user }),
-  signOut: async (db: SQLiteDatabase) => {
+  signOut: async () => {
     const { user } = get();
+    const db = await getDb()
     await googleSignOut();
     await deleteUserUsagePref();
     await deleteDoraraFolderId();
@@ -51,5 +53,6 @@ export const useUserStore = create<UserStore>((set, get) => ({
     await AsyncStorage.removeItem(`${user?.uid}-backupDone`);
     set({ authState: 'unauthenticated' });
     set({ user: null });
+    db.closeAsync();
   },
 }));
