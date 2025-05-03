@@ -70,11 +70,11 @@ Dorara-app/
     - [ ] Notifications
     - [x] editable todo and category
 
-- [ ] Notes: 
+- [x] Notes: 
     - [x] local file/folder CRUD
     - [x] firebase integration
     - [x] drive integration
-    - [ ] notes editor
+    - [x] notes editor
 - [ ] Bookmarks:
     - [ ] local CRUD
     - [ ] firebase integration
