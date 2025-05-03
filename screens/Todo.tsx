@@ -120,9 +120,14 @@ export const TodoScreen = () => {
 
   const renderTodoGroup = (date: string, dateTodos: Todo[]) => (
     <View key={date} className="mb-6">
+      <View className='flex-row items-center justify-between'>
       <Typo className="mb-3 text-lg font-bold text-gray-600">{date}</Typo>
-      {dateTodos.map((Todo) =>
-        TodoItem({ todo: Todo, toggleTodo, getCategoryIcon, onLongPressAction: onLongPress })
+       {dateTodos[0].date! < Date.now() && (
+        <Typo className="mb-3 text-md">Overdue</Typo>)
+      }
+      </View>
+      {dateTodos.map((todo: Todo) =>
+        <TodoItem key={todo.id} todo={todo} toggleTodo={toggleTodo} getCategoryIcon={getCategoryIcon} onLongPressAction={onLongPress} />
       )}
     </View>
   );

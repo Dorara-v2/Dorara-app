@@ -16,8 +16,8 @@ const CustomHeader = () => {
   const toggleColorScheme = async () => {
     try {
       const newScheme = colorScheme === 'dark' ? 'light' : 'dark';
-      await AsyncStorage.setItem('colorScheme', newScheme);
       setColorScheme(newScheme);
+      await AsyncStorage.setItem('colorScheme', newScheme);
     } catch (error) {
       console.error('Error saving color scheme:', error);
     }

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "535655252637",
+    "project_id": "dorara-7d4aa",
+    "storage_bucket": "dorara-7d4aa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:535655252637:android:5376f61e5dce631d5f8a74",
+        "android_client_info": {
+          "package_name": "com.calc.dorara"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "535655252637-qc62e8g440cptslbrhasnam92jdj4o21.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.calc.dorara",
+            "certificate_hash": "733607af110b0320bd03587bb9082b8f858869f7"
+          }
+        },
+        {
+          "client_id": "535655252637-o2n053di91s2rco5h23cdubo9qvndcga.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZdKC_Zx8gqAWxRFt4z-YV3m3MU6mrLKo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "535655252637-o2n053di91s2rco5h23cdubo9qvndcga.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

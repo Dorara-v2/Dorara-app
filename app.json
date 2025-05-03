@@ -5,7 +5,8 @@
     "version": "1.0.0",
     "notification": {
       "icon": "./assets/notification-logo.png",
-      "color": "#f3a49d"
+      "color": "#f3a49d",
+      "sound": "./assets/sounds/meow.wav"
     },
 
     "web": {
@@ -45,7 +46,10 @@
           "androidMode": "default",
           "androidCollapsedTitle": "Dorara",
           "androidImportance": "max",
-          "androidShowBadge": true
+          "androidShowBadge": true,
+          "sounds": [
+            "./assets/sounds/meow.wav"
+          ]
         }
       ]
     ]

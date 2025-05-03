@@ -1,6 +1,6 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import * as FileSystem from 'expo-file-system';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Typo } from 'components/Typo';
 import { SafeAreaView, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { MainStackParamList } from 'navigation/MainNavigator';
@@ -9,6 +9,7 @@ import { MaterialIcon } from 'components/MaterialIcon';
 import QuillEditor, { QuillToolbar } from 'react-native-cn-quill';
 import { updateDriveFileContent } from 'utils/driveDirectory/updateFile';
 import { useSQLiteContext } from 'expo-sqlite';
+import { useLoadingStore } from 'store/loadingStore';
 
 type NoteEditorRouteProp = RouteProp<MainStackParamList, 'NoteEditor'>;
 export default function NoteEditor() {
@@ -17,7 +18,9 @@ export default function NoteEditor() {
   const { colorScheme } = useColorScheme();
   const route = useRoute<NoteEditorRouteProp>();
   const { filename, content, path, file } = route.params;
+  const { setContent, setLoading } = useLoadingStore();
   const [menuVisible, setMenuVisible] = useState(false);
+  const [editorReady, setEditorReady] = useState(false);
   const saveContent = async () => {
     try {
       const filePath = `${path}/${filename}.html`;
@@ -44,6 +47,16 @@ export default function NoteEditor() {
 
   const _editor = useRef<QuillEditor>(null);
   const _toolbar = useRef<QuillToolbar>(null);
+
+  useEffect(() => {
+    setContent('Loading...')
+    if(_editor.current){
+      _editor.current.on('editor-change', () => {
+        setEditorReady(true);
+        setLoading(false);
+      })
+    }
+  },[_editor])
 
   return (
     <SafeAreaView className={`flex-1 ${colorScheme === 'dark' ? 'bg-neutral-900' : 'bg-white'}`}>
@@ -117,6 +130,9 @@ export default function NoteEditor() {
         theme={colorScheme === 'dark' ? 'light' : 'dark'}
       />
       <QuillEditor
+      style={{
+        
+      }}
         theme={{
           background: colorScheme === 'dark' ? '#171717' : 'white',
           color: colorScheme === 'dark' ? 'white' : 'black',

@@ -7,11 +7,15 @@ import { useLoadingStore } from 'store/loadingStore';
 import { useUserStore } from 'store/userStore';
 import { onlineFlow } from 'utils/onlineFlow';
 import { useSQLiteContext } from 'expo-sqlite';
+import { useNotesStore } from 'store/notesStore';
+import { scheduleNotification } from 'utils/notificationManager';
 export default function HomeScreen() {
   const { setLoading, setContent } = useLoadingStore();
   const { user, signOut } = useUserStore();
   const navigation = useNavigation<NavigationProp<MainStackParamList>>();
   const db = useSQLiteContext();
+  const { folders } = useNotesStore();
+  console.log('folders', folders);
   return (
     <ScreenContent>
       <TouchableOpacity
@@ -47,13 +51,13 @@ export default function HomeScreen() {
           Terms of services
         </Typo>
       </TouchableOpacity>
-      {/* <TouchableOpacity
-        onPress={scheduleNotification}
+      <TouchableOpacity
+        onPress={async () => await scheduleNotification('hi', 'hello', Date.now() + 1000)}
         className="mb-4 rounded-xl bg-[#f3a49d] px-6 py-4">
         <Typo color="#000" className="text-center text-lg font-bold text-white">
           Schedule Notification
         </Typo>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
     </ScreenContent>
   );
 }

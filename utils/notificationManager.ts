@@ -10,11 +10,15 @@ export const scheduleNotification = async (
     content: {
       title,
       body,
+      sound: '../../assets/sounds/meow.wav',
+      vibrate: [0,0,0,0],
+      priority: Notifications.AndroidNotificationPriority.MAX,
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DATE,
-      date: new Date(date - 600000),
+      date: date,
     },
+    
   });
   console.log('returning: ', notificationId);
   return notificationId;

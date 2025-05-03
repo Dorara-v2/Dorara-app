@@ -78,28 +78,6 @@ export default function NotesScreen() {
           name,
           selectedFolder.driveId as string
         );
-        // await db.runAsync(
-        //   `
-        //             INSERT INTO folders (
-        //                 id, 
-        //                 name, 
-        //                 localPath, 
-        //                 driveId, 
-        //                 parentId, 
-        //                 createdAt, 
-        //                 updatedAt
-        //             ) VALUES (?, ?, ?, ?, ?, ?, ?)
-        //         `,
-        //   [
-        //     id,
-        //     name,
-        //     selectedFolder.localPath + name + '/',
-        //     success ? folderId : null,
-        //     selectedFolder.id,
-        //     Date.now(),
-        //     Date.now(),
-        //   ]
-        // );
         await createFolderInDb(id, name, selectedFolder, success ? folderId : null);
         addFolder({
           id,
@@ -137,28 +115,6 @@ export default function NotesScreen() {
 
         await createLocalFile(selectedFolder.localPath + name + '.html');
         const { success, fileId } = await createDriveFile(name, selectedFolder.driveId as string);
-        // await db.runAsync(
-        //   `
-        //             INSERT INTO notes (
-        //                 id, 
-        //                 name, 
-        //                 localPath, 
-        //                 driveId, 
-        //                 parentId, 
-        //                 createdAt, 
-        //                 updatedAt
-        //             ) VALUES (?, ?, ?, ?, ?, ?, ?)
-        //         `,
-        //   [
-        //     id,
-        //     name,
-        //     selectedFolder.localPath + name + 'html',
-        //     success ? fileId : null,
-        //     selectedFolder.id,
-        //     Date.now(),
-        //     Date.now(),
-        //   ]
-        // );
         await createNoteInDb(id, name, selectedFolder, success ? fileId : null);
         addNote({
           id,
@@ -204,7 +160,7 @@ export default function NotesScreen() {
     loadFolders();
   };
 
-  const loadFolders = async () => {
+  const loadFolders = useCallback(async () => {
     const folders: Folder[] = await db.getAllAsync(`
             SELECT * FROM folders
         `);
@@ -215,7 +171,7 @@ export default function NotesScreen() {
     folders.map((folder) => (folder.type = 'folder'));
     setNotes(notes);
     setFolders(folders);
-  };
+  },[]);
 
   const trimPath = (path: string) => {
     const keyword = '/Dorara/';
@@ -223,7 +179,6 @@ export default function NotesScreen() {
     if (index === -1) return path;
     return path.slice(index + keyword.length);
   };
-  useEffect(() => {});
   return (
     <ScreenContent>
       <View className="flex flex-row items-center justify-start p-4">

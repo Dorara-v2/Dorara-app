@@ -20,7 +20,6 @@ export const CategoryList = ({ selectedCategory, setSelectedCategory, mode }: Pr
   const [isNewCategoryDialogVisible, setIsNewCategoryDialogVisible] = useState<boolean>(false);
   const [categoryMode, setCategoryMode] = useState<'create' | 'edit'>('create');
   const [selectedEditCategory, setSelectedEditCategory] = useState<Category | undefined>(undefined);
-
   const { category: categories } = useTodoStore();
   return (
     <>
