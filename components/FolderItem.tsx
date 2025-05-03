@@ -1,10 +1,8 @@
-import { MaterialIcons } from '@expo/vector-icons';
 import { Typo } from 'components/Typo';
 import { useNavigation } from '@react-navigation/native';
 import { NavigationProp, ParamListBase } from '@react-navigation/native';
 import { TouchableOpacity, View, ToastAndroid, Animated } from 'react-native';
 import * as FileSystem from 'expo-file-system';
-import { NOTES_BASE_PATH } from 'utils/offlineDirectory/createDoraraFolder';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useState, useRef } from 'react';
 import { CreateDialog } from './CreateDialog';
@@ -35,23 +33,19 @@ export const FolderItem = ({
   const [menuVisible, setMenuVisible] = useState(false);
   const [isDialogVisible, setIsDialogVisible] = useState(false);
   const [isDeleteDialogVisible, setIsDeleteDialogVisible] = useState(false);
-  const [newFolderName, setNewFolderName] = useState('');
   const { colorScheme } = useColorScheme();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   const { setLoading, setContent } = useLoadingStore();
   const db = useSQLiteContext();
 
-  // Animation values
   const slideAnimation = useRef(new Animated.Value(0)).current;
   const opacityAnimation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (menuVisible) {
-      // Reset animations to starting values
       slideAnimation.setValue(0);
       opacityAnimation.setValue(0);
 
-      // Start animations
       Animated.parallel([
         Animated.timing(slideAnimation, {
           toValue: 1,
@@ -79,7 +73,7 @@ export const FolderItem = ({
           filename: file.name,
           content,
           path: currentPath,
-          file: file
+          file: file,
         });
       } catch (error) {
         console.error('Error reading file:', error);
@@ -105,31 +99,37 @@ export const FolderItem = ({
       const filePath = `${currentPath}${file.name}`;
       await FileSystem.deleteAsync(file.type === 'folder' ? filePath : `${filePath}.html`);
       if (file.type === 'folder') {
-        await db.runAsync(`
-          DELETE FROM folders WHERE id = ?`, [
-          file.id,
-        ]);
+        await db.runAsync(
+          `
+          DELETE FROM folders WHERE id = ?`,
+          [file.id]
+        );
         const driveDeletion = await deleteDriveFileFolder(file.driveId!);
         const firebaseDeletion = await deleteFirebaseFolder(file.id);
-        await deleteAllChildren(file.id)
-        if(!driveDeletion || !firebaseDeletion) {
+        await deleteAllChildren(file.id);
+        if (!driveDeletion || !firebaseDeletion) {
           console.error('Error deleting folder from drive or Firebase');
-          await db.runAsync(`
-              INSERT INTO folder_sync id, operation, updatedAt, source VALUES (?, ?, ?, ?)`
-              ,[file.id, 'delete', Date.now(), 'local']);
+          await db.runAsync(
+            `
+              INSERT INTO folder_sync id, operation, updatedAt, source VALUES (?, ?, ?, ?)`,
+            [file.id, 'delete', Date.now(), 'local']
+          );
         }
       } else if (file.type === 'note') {
-        await db.runAsync(`
-          DELETE FROM notes WHERE id = ?`, [
-          file.id,
-        ]);
+        await db.runAsync(
+          `
+          DELETE FROM notes WHERE id = ?`,
+          [file.id]
+        );
         const driveDeletion = await deleteDriveFileFolder(file.driveId!);
         const firebaseDeletion = await deleteFirebaseNote(file.id);
-        if(!driveDeletion || !firebaseDeletion) {
+        if (!driveDeletion || !firebaseDeletion) {
           console.error('Error deleting note from drive or Firebase');
-          await db.runAsync(`
-              INSERT INTO note_sync id, operation, updatedAt, source VALUES (?, ?, ?, ?)`
-              ,[file.id, 'delete', Date.now(), 'local']);
+          await db.runAsync(
+            `
+              INSERT INTO note_sync id, operation, updatedAt, source VALUES (?, ?, ?, ?)`,
+            [file.id, 'delete', Date.now(), 'local']
+          );
         }
       }
       await loadFolders();
@@ -144,19 +144,19 @@ export const FolderItem = ({
     setMenuVisible(false);
   };
 
-  const displayName = file.type === 'folder'
-    ? file.name
-    : file.name.endsWith('.html')
-    ? file.name.slice(0, -5)
-    : file.name;
+  const displayName =
+    file.type === 'folder'
+      ? file.name
+      : file.name.endsWith('.html')
+        ? file.name.slice(0, -5)
+        : file.name;
 
   return (
     <View className="mb-2">
       <TouchableOpacity
         onPress={handlePress}
         onLongPress={handleLongPress}
-        className="flex-row items-center rounded-lg p-4 z-0"
-      >
+        className="z-0 flex-row items-center rounded-lg p-4">
         <MaterialIcon
           name={file.type === 'folder' ? 'folder' : 'file-copy'}
           size={30}
@@ -167,7 +167,7 @@ export const FolderItem = ({
 
       {menuVisible && (
         <Animated.View
-          className="relative z-10 self-start top-0 rounded-lg w-full"
+          className="relative top-0 z-10 w-full self-start rounded-lg"
           style={{
             backgroundColor: colorScheme === 'dark' ? '#1f1f1f' : 'white',
             elevation: 5,
@@ -184,15 +184,13 @@ export const FolderItem = ({
                 }),
               },
             ],
-          }}
-        >
+          }}>
           <TouchableOpacity
-            className="flex-row items-center p-3 z-10"
+            className="z-10 flex-row items-center p-3"
             onPress={() => {
               setIsDialogVisible(true);
               setMenuVisible(false);
-            }}
-          >
+            }}>
             <MaterialIcon name="edit" size={24} color="#f3a49d" />
             <Typo className="ml-2">Rename</Typo>
           </TouchableOpacity>
@@ -200,12 +198,11 @@ export const FolderItem = ({
           <View className="h-[1px] bg-gray-200" />
 
           <TouchableOpacity
-            className="flex-row items-center p-3 z-10"
+            className="z-10 flex-row items-center p-3"
             onPress={() => {
               setIsDeleteDialogVisible(true);
               setMenuVisible(false);
-            }}
-          >
+            }}>
             <MaterialIcon name="delete" size={24} color="#f3a49d" />
             <Typo className="ml-2">Delete</Typo>
           </TouchableOpacity>
@@ -213,9 +210,8 @@ export const FolderItem = ({
           <View className="h-[1px] bg-gray-200" />
 
           <TouchableOpacity
-            className="flex-row items-center p-3 z-10 "
-            onPress={() => setMenuVisible(false)}
-          >
+            className="z-10 flex-row items-center p-3 "
+            onPress={() => setMenuVisible(false)}>
             <MaterialIcon name="close" size={24} color="#f3a49d" />
             <Typo className="ml-2">Cancel</Typo>
           </TouchableOpacity>

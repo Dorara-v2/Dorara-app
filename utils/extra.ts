@@ -1,11 +1,9 @@
-import AsyncStorage from "@react-native-async-storage/async-storage"
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const setUserUsagePref = async (pref: string) => {
-    await AsyncStorage.setItem('userUsagePref', pref);
-}
+  await AsyncStorage.setItem('userUsagePref', pref);
+};
 
 export const deleteUserUsagePref = async () => {
-    await AsyncStorage.removeItem('userUsagePref');
-}
-
+  await AsyncStorage.removeItem('userUsagePref');
+};

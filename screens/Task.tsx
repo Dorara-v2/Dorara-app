@@ -66,11 +66,13 @@ export const TaskScreen = () => {
       </View>
 
       <ScrollView className="flex-1 px-4">
-        {unscheduledTodos.length > 0 ?
-        unscheduledTodos.map((todo) =>
+        {unscheduledTodos.length > 0 ? (
+          unscheduledTodos.map((todo) =>
             TodoItem({ todo, toggleTodo, getCategoryIcon, onLongPressAction })
-          ) : <NothingHere />
-    }
+          )
+        ) : (
+          <NothingHere />
+        )}
       </ScrollView>
 
       <TouchableOpacity

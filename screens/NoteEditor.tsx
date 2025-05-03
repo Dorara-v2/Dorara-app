@@ -1,12 +1,8 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import * as FileSystem from 'expo-file-system';
-import { createRef, LegacyRef, useRef, useState } from 'react';
-import { NOTES_BASE_PATH } from 'utils/offlineDirectory/createDoraraFolder';
-import ScreenContent from 'components/ScreenContent';
+import { useRef, useState } from 'react';
 import { Typo } from 'components/Typo';
-import { TextInput } from 'react-native-gesture-handler';
-import { SafeAreaView, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { SafeAreaView, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { MainStackParamList } from 'navigation/MainNavigator';
 import { useColorScheme } from 'nativewind';
 import { MaterialIcon } from 'components/MaterialIcon';
@@ -16,41 +12,41 @@ import { useSQLiteContext } from 'expo-sqlite';
 
 type NoteEditorRouteProp = RouteProp<MainStackParamList, 'NoteEditor'>;
 export default function NoteEditor() {
-    const db = useSQLiteContext();
+  const db = useSQLiteContext();
   const navigation = useNavigation();
   const { colorScheme } = useColorScheme();
   const route = useRoute<NoteEditorRouteProp>();
   const { filename, content, path, file } = route.params;
-  const [noteContent, setNoteContent] = useState(content);
   const [menuVisible, setMenuVisible] = useState(false);
-  console.log(file)
   const saveContent = async () => {
     try {
       const filePath = `${path}/${filename}.html`;
-      if(_editor.current) {
-         _editor.current.getHtml().then(async (html) => {
-            FileSystem.writeAsStringAsync(filePath, html)
-            const updatedInDrive = await updateDriveFileContent(file.driveId!, html)
-            if(!updatedInDrive) {
-              console.log("Error updating file in Drive");
-              await db.runAsync(`
+      if (_editor.current) {
+        _editor.current.getHtml().then(async (html) => {
+          FileSystem.writeAsStringAsync(filePath, html);
+          const updatedInDrive = await updateDriveFileContent(file.driveId!, html);
+          if (!updatedInDrive) {
+            console.log('Error updating file in Drive');
+            await db.runAsync(
+              `
                 INSERT INTO note_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)
-                `, [file.id, 'update', Date.now(), 'local'])
-            }
-        })
+                `,
+              [file.id, 'update', Date.now(), 'local']
+            );
+          }
+        });
       }
       ToastAndroid.show('File saved successfully', ToastAndroid.SHORT);
     } catch (error) {
       console.error('Error saving file:', error);
     }
-    
   };
 
   const _editor = useRef<QuillEditor>(null);
   const _toolbar = useRef<QuillToolbar>(null);
 
   return (
-    <SafeAreaView className={`flex-1 ${colorScheme === "dark" ? 'bg-neutral-900' : 'bg-white'}`}>
+    <SafeAreaView className={`flex-1 ${colorScheme === 'dark' ? 'bg-neutral-900' : 'bg-white'}`}>
       <View className="mb-5 flex-row items-center justify-between px-4">
         <View className="flex-row items-center gap-x-4">
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -113,15 +109,23 @@ export default function NoteEditor() {
         </View>
       )}
 
-     <QuillToolbar ref={_toolbar} container="avoiding-view" editor={_editor} options="full" theme={colorScheme === "dark" ? "light": "dark"} />
+      <QuillToolbar
+        ref={_toolbar}
+        container="avoiding-view"
+        editor={_editor}
+        options="full"
+        theme={colorScheme === 'dark' ? 'light' : 'dark'}
+      />
       <QuillEditor
-          theme={{background: colorScheme === 'dark' ? '#171717' : 'white', color: colorScheme === 'dark' ? 'white': 'black', placeholder: "gray"}}
+        theme={{
+          background: colorScheme === 'dark' ? '#171717' : 'white',
+          color: colorScheme === 'dark' ? 'white' : 'black',
+          placeholder: 'gray',
+        }}
         ref={_editor}
         initialHtml={content}
-        defaultFontFamily='Monospace'
+        defaultFontFamily="Monospace"
       />
-
-      </SafeAreaView>
+    </SafeAreaView>
   );
 }
-

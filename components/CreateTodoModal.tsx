@@ -86,21 +86,21 @@ export const CreateTodoModal = ({ setIsAddModalVisible, mode, todo: selectedTodo
     }
   };
 
-  console.log(todo)
+  console.log(todo);
 
   const createOrUpdateTodoInDb = async () => {
     try {
       if (newTodo.name.trim() === '') {
         ToastAndroid.show('Todo name cannot be empty', ToastAndroid.SHORT);
         return;
-      };
+      }
       if (mode === 'create') {
-        if(isReminderEnabled && newTodo.date && newTodo.time){
+        if (isReminderEnabled && newTodo.date && newTodo.time) {
           const notificationId = await scheduleNotification(
             `Reminder: ${newTodo.name}`,
             randomNotificationBody(newTodo.name),
             newTodo.time
-          )
+          );
           await new Promise<void>((resolve) => {
             setNewTodo((prev) => {
               resolve();

@@ -3,18 +3,8 @@ import ScreenContent from 'components/ScreenContent';
 import { Typo } from 'components/Typo';
 import { useColorScheme } from 'nativewind';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  Animated,
-  FlatList,
-  Text,
-  TouchableOpacity,
-  View,
-  ActivityIndicator,
-  Alert,
-  Image,
-} from 'react-native';
+import { Animated, FlatList, TouchableOpacity, View, Alert } from 'react-native';
 import { createLocalFile } from 'utils/offlineDirectory/createFiles';
-import { fetchFolders } from 'utils/offlineDirectory/fetchFolders';
 import { CreateDialog } from 'components/CreateDialog';
 import { createLocalFolder } from 'utils/offlineDirectory/createFolder';
 import { useLoadingStore } from 'store/loadingStore';

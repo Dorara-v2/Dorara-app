@@ -3,12 +3,9 @@ import Markdown from 'react-native-markdown-display';
 
 export default function TermsOfServiceScreen() {
   return (
-      <ScrollView
-          contentInsetAdjustmentBehavior="automatic"
-          style={{height: '100%', padding: 10}}
-        >
-          <Markdown>
-            {`
+    <ScrollView contentInsetAdjustmentBehavior="automatic" style={{ height: '100%', padding: 10 }}>
+      <Markdown>
+        {`
 # Terms of Service for Dorara
 
 **Effective Date:** April 13, 2025
@@ -100,7 +97,7 @@ For questions about these Terms, contact us at:
 
 
             `}
-          </Markdown>
-        </ScrollView>
+      </Markdown>
+    </ScrollView>
   );
 }

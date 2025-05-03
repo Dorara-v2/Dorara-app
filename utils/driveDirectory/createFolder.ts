@@ -1,19 +1,18 @@
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { getDriveAccessToken } from 'utils/driveTokenManager';
 import { findDoraraFolderId } from './findOrCreateDoraraFolder';
 
 export const createDriveFolder = async (
   folderName: string,
   parentFolderId: string
-): Promise<{success:boolean, folderId: string | null}> => {
+): Promise<{ success: boolean; folderId: string | null }> => {
   const token = (await GoogleSignin.getTokens()).accessToken;
   if (!token) {
     console.log('No token found');
-    return {success: false, folderId: null};
+    return { success: false, folderId: null };
   }
   if (!parentFolderId) {
-              parentFolderId = await findDoraraFolderId() as string
-          }
+    parentFolderId = (await findDoraraFolderId()) as string;
+  }
   try {
     const response = await fetch('https://www.googleapis.com/drive/v3/files', {
       method: 'POST',
@@ -30,12 +29,12 @@ export const createDriveFolder = async (
     const json = await response.json();
     if (json.error) {
       console.log('Error creating folder:', json.error);
-      return {success: false, folderId: null};
+      return { success: false, folderId: null };
     }
     console.log('Folder created:', json);
-    return {success: true, folderId: json.id};
+    return { success: true, folderId: json.id };
   } catch (error) {
     console.log('Error creating folder:', error);
-    return {success: false, folderId: null};
+    return { success: false, folderId: null };
   }
 };

@@ -100,9 +100,12 @@ export const TodoScreen = () => {
         ...updatedTodo,
         updatedAt: Date.now(),
       });
-      if(!firebaseUpdate){
-          console.log('inserting in todo_sync')
-          await db.runAsync(`INSERT INTO todo_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)`, [updatedTodo.id, 'update', Date.now(), 'local']);
+      if (!firebaseUpdate) {
+        console.log('inserting in todo_sync');
+        await db.runAsync(
+          `INSERT INTO todo_sync (id, operation, updatedAt, source) VALUES (?, ?, ?, ?)`,
+          [updatedTodo.id, 'update', Date.now(), 'local']
+        );
       }
     } catch (error) {
       console.log('Error updating todo in DB:', error);
@@ -118,7 +121,9 @@ export const TodoScreen = () => {
   const renderTodoGroup = (date: string, dateTodos: Todo[]) => (
     <View key={date} className="mb-6">
       <Typo className="mb-3 text-lg font-bold text-gray-600">{date}</Typo>
-      {dateTodos.map((Todo) => TodoItem({ todo: Todo, toggleTodo, getCategoryIcon, onLongPressAction: onLongPress }))}
+      {dateTodos.map((Todo) =>
+        TodoItem({ todo: Todo, toggleTodo, getCategoryIcon, onLongPressAction: onLongPress })
+      )}
     </View>
   );
 
@@ -137,17 +142,18 @@ export const TodoScreen = () => {
       </View>
 
       <ScrollView className="flex-1 px-4">
-        {Object.entries(groupedTodos).length > 0 ? 
-        Object.entries(groupedTodos).map(([date, dateTodos]) => renderTodoGroup(date, dateTodos))
-        : <NothingHere />
-      }
+        {Object.entries(groupedTodos).length > 0 ? (
+          Object.entries(groupedTodos).map(([date, dateTodos]) => renderTodoGroup(date, dateTodos))
+        ) : (
+          <NothingHere />
+        )}
       </ScrollView>
 
       <TouchableOpacity
         onPress={() => {
           setSelectedTodo(undefined);
           setMode('create');
-          setIsAddModalVisible(true)
+          setIsAddModalVisible(true);
         }}
         className="absolute bottom-20 right-10 h-16 w-16 items-center justify-center rounded-full bg-[#f3a49d]"
         style={{
@@ -165,7 +171,11 @@ export const TodoScreen = () => {
         transparent
         animationType="slide"
         onRequestClose={() => setIsAddModalVisible(false)}>
-        <CreateTodoModal mode={mode} todo={selectedTodo} setIsAddModalVisible={setIsAddModalVisible} />
+        <CreateTodoModal
+          mode={mode}
+          todo={selectedTodo}
+          setIsAddModalVisible={setIsAddModalVisible}
+        />
       </Modal>
     </ScreenContent>
   );

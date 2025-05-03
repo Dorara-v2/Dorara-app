@@ -1,9 +1,8 @@
 import * as SQLite from 'expo-sqlite';
 
-
 export const initDB = async () => {
-    const db = await SQLite.openDatabaseAsync('Dorara.db')
-    await db.execAsync(`
+  const db = await SQLite.openDatabaseAsync('Dorara.db');
+  await db.execAsync(`
         PRAGMA journal_mode = WAL;
         CREATE TABLE IF NOT EXISTS todos (
             id TEXT PRIMARY KEY,
@@ -64,4 +63,4 @@ export const initDB = async () => {
             source TEXT
         );
         `);
-}
+};
