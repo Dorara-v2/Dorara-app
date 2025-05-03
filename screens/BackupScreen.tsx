@@ -12,6 +12,8 @@ import { fetchAllFolders } from 'firebase/folder';
 import { createLocalFolder } from 'utils/offlineDirectory/createFolder';
 import { fetchAllNotes } from 'firebase/note';
 import { createLocalFile } from 'utils/offlineDirectory/createFiles';
+import { getDriveFile } from 'utils/driveDirectory/getFile';
+import * as FileSystem from 'expo-file-system';
 
 type props = {
   onBackupComplete: () => void;
@@ -83,6 +85,10 @@ export default function BackupScreen({ onBackupComplete }: props) {
           ]
         );
         await createLocalFile(note.localPath)
+        const { success, file } = await getDriveFile(note.driveId!)
+        if (success && file){
+          await FileSystem.writeAsStringAsync(note.localPath, file)
+        }
       }
     }
     setTimeout(() => {

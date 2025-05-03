@@ -8,7 +8,7 @@ import { deleteAcessToken } from "utils/driveTokenManager";
 import { deleteUserUsagePref, setUserUsagePref } from "utils/extra";
 import { googleSignOut } from "utils/googleOauth";
 import { create } from "zustand";
-
+import * as FileSystem from "expo-file-system";
 
 export const GUEST_USER = {
     uid: "guest",
@@ -49,6 +49,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
             DELETE FROM folder_sync;
             DELETE FROM note_sync;
             `)
+        await FileSystem.deleteAsync(FileSystem.documentDirectory + 'Dorara', { idempotent: true })
         await AsyncStorage.removeItem(`${user?.uid}-backupDone`);
         set({ authState: 'unauthenticated' });
         set({ user: null });

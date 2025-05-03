@@ -116,17 +116,17 @@ export default function NotesScreen() {
           parentId: selectedFolder.id,
           createdAt: Date.now(),
           updatedAt: Date.now(),
-        })
+        });
         setLoading(false);
         const addedToFirebase = await createFirebaseFolder({
-            id,
-            name,
-            localPath: selectedFolder.localPath + name + '/',
-            driveId: success ? folderId : null,
-            parentId: selectedFolder.id,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
-        })
+          id,
+          name,
+          localPath: selectedFolder.localPath + name + '/',
+          driveId: success ? folderId : null,
+          parentId: selectedFolder.id,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
         if (!success || !addedToFirebase) {
           await db.runAsync(
             `
@@ -142,19 +142,19 @@ export default function NotesScreen() {
         }
       } else {
         const noteExists = notes.some(
-            note => note.name === name && note.parentId === selectedFolder.id
+          (note) => note.name === name && note.parentId === selectedFolder.id
         );
-        if(noteExists){
-            Alert.alert('Error', 'Note with this name already exists');
-            setLoading(false);
-            return;
+        if (noteExists) {
+          Alert.alert('Error', 'Note with this name already exists');
+          setLoading(false);
+          return;
         }
         const id = uuid.v4() as string;
-        
-        await createLocalFile(selectedFolder.localPath+name+'.html');
-        const {success, fileId} = await createDriveFile(name, selectedFolder.driveId as string);
+
+        await createLocalFile(selectedFolder.localPath + name + '.html');
+        const { success, fileId } = await createDriveFile(name, selectedFolder.driveId as string);
         await db.runAsync(
-            `
+          `
                     INSERT INTO notes (
                         id, 
                         name, 
@@ -165,38 +165,38 @@ export default function NotesScreen() {
                         updatedAt
                     ) VALUES (?, ?, ?, ?, ?, ?, ?)
                 `,
-            [
-                id,
-                name,
-                selectedFolder.localPath + name + 'html',
-                success ? fileId : null,
-                selectedFolder.id,
-                Date.now(),
-                Date.now(),
-            ]
+          [
+            id,
+            name,
+            selectedFolder.localPath + name + 'html',
+            success ? fileId : null,
+            selectedFolder.id,
+            Date.now(),
+            Date.now(),
+          ]
         );
         addNote({
-            id,
-            name,
-            localPath: selectedFolder.localPath + name + '.html',
-            driveId: success ? fileId : null,
-            parentId: selectedFolder.id,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
-        })
+          id,
+          name,
+          localPath: selectedFolder.localPath + name + '.html',
+          driveId: success ? fileId : null,
+          parentId: selectedFolder.id,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
         setLoading(false);
         const addedToFirebase = await createFirebaseNote({
-            id,
-            name,
-            localPath: selectedFolder.localPath + name + '.html',
-            driveId: success ? fileId : null,
-            parentId: selectedFolder.id,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
-        })
+          id,
+          name,
+          localPath: selectedFolder.localPath + name + '.html',
+          driveId: success ? fileId : null,
+          parentId: selectedFolder.id,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
         if (!success || !addedToFirebase) {
-            await db.runAsync(
-                `
+          await db.runAsync(
+            `
                             INSERT INTO note_sync (
                                 id, 
                                 operation, 
@@ -204,8 +204,8 @@ export default function NotesScreen() {
                                 source
                             ) VALUES (?, ?, ?, ?)
                         `,
-                [id, 'create', Date.now(), 'local']
-            );
+            [id, 'create', Date.now(), 'local']
+          );
         }
       }
       setDialogVisible(false);
@@ -225,17 +225,17 @@ export default function NotesScreen() {
     const notes: Note[] = await db.getAllAsync(`
             SELECT * FROM notes
         `);
-        notes.map((note) => note.type = 'note');
-        folders.map((folder) => folder.type = 'folder');
+    notes.map((note) => (note.type = 'note'));
+    folders.map((folder) => (folder.type = 'folder'));
     setNotes(notes);
     setFolders(folders);
   };
 
   const trimPath = (path: string) => {
-    const keyword = "/Dorara/";
-  const index = path.indexOf(keyword);
-  if (index === -1) return path;
-  return path.slice(index + keyword.length);
+    const keyword = '/Dorara/';
+    const index = path.indexOf(keyword);
+    if (index === -1) return path;
+    return path.slice(index + keyword.length);
   };
   useEffect(() => {});
   return (
@@ -266,13 +266,9 @@ export default function NotesScreen() {
                 currentPath={selectedFolder.localPath}
               />
             )}
-            
           </>
         )}
-        ListEmptyComponent={
-          
-            <NothingHere />
-        }
+        ListEmptyComponent={<NothingHere />}
         refreshing={isLoading}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
