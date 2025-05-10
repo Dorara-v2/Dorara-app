@@ -83,7 +83,6 @@ export default function BackupScreen({ onBackupComplete }: props) {
           ]
         );
         await createLocalFolder(folder.localPath);
-        addFolder(folder);
       }
     }
     const notes: Note[] = await fetchAllNotes();
@@ -102,7 +101,6 @@ export default function BackupScreen({ onBackupComplete }: props) {
           ]
         );
         await createLocalFile(note.localPath);
-        addNote(note);
         const { success, file } = await getDriveFile(note.driveId!);
         if (success && file) {
           await FileSystem.writeAsStringAsync(note.localPath, file);
