@@ -16,6 +16,13 @@
       "tsconfigPaths": true
     },
     "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "This app accesses your photos to let you upload photos.",
+          "cameraPermission": "This app accesses your camera to let you upload photos."
+        }
+      ],
       ["@react-native-google-signin/google-signin"],
       ["@react-native-firebase/app"],
       [

@@ -2,7 +2,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import * as FileSystem from 'expo-file-system';
 import { useEffect, useRef, useState } from 'react';
 import { Typo } from 'components/Typo';
-import { SafeAreaView, ToastAndroid, TouchableOpacity, View } from 'react-native';
+import { _Text, Alert, Image, Modal, SafeAreaView, TextInput, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import { MainStackParamList } from 'navigation/MainNavigator';
 import { useColorScheme } from 'nativewind';
 import { MaterialIcon } from 'components/MaterialIcon';
@@ -10,6 +10,7 @@ import QuillEditor, { QuillToolbar } from 'react-native-cn-quill';
 import { updateDriveFileContent } from 'utils/driveDirectory/updateFile';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useLoadingStore } from 'store/loadingStore';
+import * as ImagePicker from 'expo-image-picker';
 
 type NoteEditorRouteProp = RouteProp<MainStackParamList, 'NoteEditor'>;
 export default function NoteEditor() {
@@ -21,6 +22,12 @@ export default function NoteEditor() {
   const { setContent, setLoading } = useLoadingStore();
   const [menuVisible, setMenuVisible] = useState(false);
   const [editorReady, setEditorReady] = useState(false);
+
+  const [linkModalVisible, setLinkModalVisible] = useState(false);
+  const [linkText, setLinkText] = useState('');
+  const [linkUrl, setLinkUrl] = useState('https://');
+  const [linkPosition, setLinkPosition] = useState<{ index: number } | null>(null);
+
   const saveContent = async () => {
     try {
       const filePath = `${path}/${filename}.html`;
@@ -48,16 +55,80 @@ export default function NoteEditor() {
   const _editor = useRef<QuillEditor>(null);
   const _toolbar = useRef<QuillToolbar>(null);
 
+  const customHandler = async (name: string) => {
+    if (name === 'image') {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        quality: 1,
+      });
+      if (!result.canceled) {
+        console.log(result.assets[0].uri);
+        if (_editor.current) {
+          try {
+            _editor.current.getSelection().then((range) => {
+              _editor.current?.insertEmbed(range.index, 'image', 'file:///data/user/0/com.calc.dorara/cache/ImagePicker/65923008-af0d-4799-9a67-f85bb24fa7ba.jpeg');
+            });
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
+    } else if (name === 'link') {
+      if (_editor.current) {
+        try {
+          _editor.current.getSelection().then((range) => {
+            if (range) {
+              setLinkPosition({ index: range.index });
+              _editor.current?.getText(range.index, range.length).then((selectedText) => {
+                setLinkText(selectedText || '');
+                setLinkModalVisible(true);
+              });
+            } else {
+              setLinkPosition({ index: 0 });
+              setLinkText('');
+              setLinkModalVisible(true);
+            }
+          });
+        } catch (error) {
+          console.log('Error getting selection:', error);
+        }
+      }
+    }
+  };
+
+  const handleInsertLink = () => {
+    if (!linkPosition) return;
+
+    if (_editor.current) {
+      const index = linkPosition.index;
+
+      if (linkText.trim()) {
+        if (linkText) {
+          _editor.current.deleteText(index, linkText.length);
+        }
+
+        _editor.current.insertEmbed(index, 'link', linkUrl)
+      
+      } else {
+        _editor.current.insertEmbed(index, 'link', linkUrl)
+      }
+
+      setLinkModalVisible(false);
+      setLinkText('');
+      setLinkUrl('https://');
+    }
+  };
+
   useEffect(() => {
-    setContent('Loading...')
-    if(_editor.current){
+    setContent('Loading...');
+    if (_editor.current) {
       _editor.current.on('editor-change', () => {
         setEditorReady(true);
         setLoading(false);
-      })
+      });
     }
-  },[_editor])
-
+  }, [_editor]);
   return (
     <SafeAreaView className={`flex-1 ${colorScheme === 'dark' ? 'bg-neutral-900' : 'bg-white'}`}>
       <View className="mb-5 flex-row items-center justify-between px-4">
@@ -93,7 +164,6 @@ export default function NoteEditor() {
           <TouchableOpacity
             className="flex-row items-center p-3"
             onPress={() => {
-              // Add menu action here
               setMenuVisible(false);
             }}>
             <MaterialIcon name="content-copy" size={24} color="#f3a49d" />
@@ -126,13 +196,27 @@ export default function NoteEditor() {
         ref={_toolbar}
         container="avoiding-view"
         editor={_editor}
-        options="full"
+        options={[
+          ['bold', 'italic', 'underline', 'strike'],
+          ['blockquote', 'code-block'],
+          ['link', 'image'],
+          [{ header: 1 }, { header: 2 }, { header: 3 }],
+          [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
+          [{ script: 'sub' }, { script: 'super' }],
+          [{ indent: '-1' }, { indent: '+1' }],
+          [{ size: ['small', false, 'large', 'huge'] }],
+          [{ header: [1, 2, 3, 4, 5, 6, false] }],
+          [{ color: [] }, { background: [] }],
+          [{ font: [] }],
+          [{ align: [] }],
+        ]}
         theme={colorScheme === 'dark' ? 'light' : 'dark'}
+        custom={{
+          handler: customHandler,
+          actions: ['image', 'link'],
+        }}
       />
       <QuillEditor
-      style={{
-        
-      }}
         theme={{
           background: colorScheme === 'dark' ? '#171717' : 'white',
           color: colorScheme === 'dark' ? 'white' : 'black',
@@ -142,6 +226,78 @@ export default function NoteEditor() {
         initialHtml={content}
         defaultFontFamily="Monospace"
       />
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={linkModalVisible}
+        onRequestClose={() => setLinkModalVisible(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View
+            className="w-11/12 max-w-md p-4 rounded-lg"
+            style={{ backgroundColor: colorScheme === 'dark' ? '#1f1f1f' : 'white' }}
+          >
+            <Typo className="text-xl font-bold mb-4">Insert Link</Typo>
+
+            <View className="mb-4">
+              <Typo className="mb-2">Text to display:</Typo>
+              <TextInput
+                className="border p-2 rounded-md mb-2"
+                style={{
+                  borderColor: colorScheme === 'dark' ? '#444' : '#ccc',
+                  color: colorScheme === 'dark' ? 'white' : 'black',
+                  backgroundColor: colorScheme === 'dark' ? '#333' : '#f8f8f8',
+                }}
+                placeholder="Link text (optional)"
+                placeholderTextColor={colorScheme === 'dark' ? '#aaa' : '#888'}
+                value={linkText}
+                onChangeText={setLinkText}
+              />
+            </View>
+
+            <View className="mb-6">
+              <Typo className="mb-2">URL:</Typo>
+              <TextInput
+                className="border p-2 rounded-md"
+                style={{
+                  borderColor: colorScheme === 'dark' ? '#444' : '#ccc',
+                  color: colorScheme === 'dark' ? 'white' : 'black',
+                  backgroundColor: colorScheme === 'dark' ? '#333' : '#f8f8f8',
+                }}
+                placeholder="https://example.com"
+                placeholderTextColor={colorScheme === 'dark' ? '#aaa' : '#888'}
+                value={linkUrl}
+                onChangeText={setLinkUrl}
+                autoCapitalize="none"
+                keyboardType="url"
+              />
+            </View>
+
+            <View className="flex-row justify-end gap-x-2">
+              <TouchableOpacity
+                className="px-4 py-2 rounded-md"
+                style={{ backgroundColor: colorScheme === 'dark' ? '#333' : '#e0e0e0' }}
+                onPress={() => {
+                  setLinkModalVisible(false);
+                  setLinkText('');
+                  setLinkUrl('https://');
+                }}
+              >
+                <Typo>Cancel</Typo>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="px-4 py-2 rounded-md"
+                style={{ backgroundColor: '#f3a49d' }}
+                onPress={handleInsertLink}
+              >
+                <Typo className="text-white">Insert</Typo>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }

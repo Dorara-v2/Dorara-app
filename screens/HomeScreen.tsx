@@ -15,7 +15,6 @@ export default function HomeScreen() {
   const navigation = useNavigation<NavigationProp<MainStackParamList>>();
   const db = useSQLiteContext();
   const { folders } = useNotesStore();
-  console.log('folders', folders);
   return (
     <ScreenContent>
       <TouchableOpacity
@@ -58,6 +57,7 @@ export default function HomeScreen() {
           Schedule Notification
         </Typo>
       </TouchableOpacity>
+      <Image alt='image' className='w-full h-full' src='file:///data/user/0/com.calc.dorara/cache/ImagePicker/7a36d658-0208-4674-a930-a8f1dd27fa6a.jpeg' />
     </ScreenContent>
   );
 }
