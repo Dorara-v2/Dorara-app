@@ -15,6 +15,7 @@ import { createLocalFile } from 'utils/offlineDirectory/createFiles';
 import { getDriveFile } from 'utils/driveDirectory/getFile';
 import * as FileSystem from 'expo-file-system';
 import { useNotesStore } from 'store/notesStore';
+import { useTodoStore } from 'store/todoStore';
 
 type props = {
   onBackupComplete: () => void;
@@ -25,6 +26,7 @@ export default function BackupScreen({ onBackupComplete }: props) {
   const user = auth().currentUser;
   const [messageIndex, setMessageIndex] = useState(0);
   const { addFolder, addNote } = useNotesStore();
+  const { addTodo, addCategory } = useTodoStore();
   const messages = [
     'Fetching your todos...',
     'Syncing your notes...',
@@ -43,6 +45,7 @@ export default function BackupScreen({ onBackupComplete }: props) {
           category.name,
           category.icon ?? null,
         ]);
+        addCategory(category);
       }
     }
     const todos: Todo[] = await fetchAllTodos();
@@ -61,6 +64,7 @@ export default function BackupScreen({ onBackupComplete }: props) {
             todo.updatedAt,
           ]
         );
+        addTodo(todo);
       }
     }
     const folders: Folder[] = await fetchAllFolders();
@@ -105,10 +109,7 @@ export default function BackupScreen({ onBackupComplete }: props) {
         }
       }
     }
-    setTimeout(() => {
-      onBackupComplete();
-    }, 2000);
-
+    onBackupComplete()
     await AsyncStorage.setItem(`${user?.uid}-backupDone`, 'true');
   };
 

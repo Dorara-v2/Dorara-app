@@ -48,15 +48,19 @@ export default function NoteEditor() {
   const _editor = useRef<QuillEditor>(null);
   const _toolbar = useRef<QuillToolbar>(null);
 
+  const uploadImage = async (image: string) => {
+    console.log('Image uploaded:');
+  };
+
   useEffect(() => {
-    setContent('Loading...')
-    if(_editor.current){
+    setContent('Loading...');
+    if (_editor.current) {
       _editor.current.on('editor-change', () => {
         setEditorReady(true);
         setLoading(false);
-      })
+      });
     }
-  },[_editor])
+  }, [_editor]);
 
   return (
     <SafeAreaView className={`flex-1 ${colorScheme === 'dark' ? 'bg-neutral-900' : 'bg-white'}`}>
@@ -93,7 +97,6 @@ export default function NoteEditor() {
           <TouchableOpacity
             className="flex-row items-center p-3"
             onPress={() => {
-              // Add menu action here
               setMenuVisible(false);
             }}>
             <MaterialIcon name="content-copy" size={24} color="#f3a49d" />
@@ -126,13 +129,30 @@ export default function NoteEditor() {
         ref={_toolbar}
         container="avoiding-view"
         editor={_editor}
-        options="full"
+        options={[
+          ['bold', 'italic', 'underline', 'strike'], // toggled buttons
+          ['blockquote', 'code-block'],
+          ['link', 'image'],
+
+        [{ header: 1 }, { header: 2 }, {header: 3}],
+          [{ list: 'ordered' }, { list: 'bullet' }, { list: 'check' }],
+          [{ script: 'sub' }, { script: 'super' }],
+          [{ indent: '-1' }, { indent: '+1' }], //
+
+          [{ size: ['small', false, 'large', 'huge'] }],
+          [{ header: [1, 2, 3, 4, 5, 6, false] }],
+
+          [{ color: [] }, { background: [] }],
+          [{ font: [] }],
+          [{ align: [] }],
+        ]}
         theme={colorScheme === 'dark' ? 'light' : 'dark'}
+        custom={{
+          handler: uploadImage,
+          actions: ['image'],
+        }}
       />
       <QuillEditor
-      style={{
-        
-      }}
         theme={{
           background: colorScheme === 'dark' ? '#171717' : 'white',
           color: colorScheme === 'dark' ? 'white' : 'black',
