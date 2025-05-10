@@ -14,6 +14,7 @@ import { fetchAllNotes } from 'firebase/note';
 import { createLocalFile } from 'utils/offlineDirectory/createFiles';
 import { getDriveFile } from 'utils/driveDirectory/getFile';
 import * as FileSystem from 'expo-file-system';
+import { useNotesStore } from 'store/notesStore';
 
 type props = {
   onBackupComplete: () => void;
@@ -23,6 +24,7 @@ export default function BackupScreen({ onBackupComplete }: props) {
   const db = useSQLiteContext();
   const user = auth().currentUser;
   const [messageIndex, setMessageIndex] = useState(0);
+  const { addFolder, addNote } = useNotesStore();
   const messages = [
     'Fetching your todos...',
     'Syncing your notes...',
@@ -77,6 +79,7 @@ export default function BackupScreen({ onBackupComplete }: props) {
           ]
         );
         await createLocalFolder(folder.localPath);
+        addFolder(folder);
       }
     }
     const notes: Note[] = await fetchAllNotes();
@@ -95,6 +98,7 @@ export default function BackupScreen({ onBackupComplete }: props) {
           ]
         );
         await createLocalFile(note.localPath);
+        addNote(note);
         const { success, file } = await getDriveFile(note.driveId!);
         if (success && file) {
           await FileSystem.writeAsStringAsync(note.localPath, file);
