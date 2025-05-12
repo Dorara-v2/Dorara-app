@@ -4,6 +4,7 @@ import * as FileSystem from 'expo-file-system';
 import firestore from '@react-native-firebase/firestore';
 import { Folder } from 'utils/types';
 import { deleteFirebaseNote } from './note';
+import { AuthState } from 'store/userStore';
 export const createFirebaseBaseFolder = async () => {
   const user = auth().currentUser;
   if (!user) {

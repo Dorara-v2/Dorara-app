@@ -1,9 +1,14 @@
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { AuthState } from 'store/userStore';
 
 export const updateDriveFileContent = async (
   fileId: string,
-  content: string
+  content: string,
+  authState: AuthState
 ): Promise<{ success: boolean }> => {
+  if(authState !== 'authenticated') {
+    return { success: false };
+  }
   try {
     const { accessToken } = await GoogleSignin.getTokens();
     if (!accessToken) {

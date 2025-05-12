@@ -11,10 +11,13 @@ import { MaterialIcon } from './MaterialIcon';
 import { Folder, Note } from 'utils/types';
 import { deleteDriveFileFolder } from 'utils/driveDirectory/deleteFileFolder';
 import { deleteAllChildren, deleteFirebaseFolder } from 'firebase/folder';
-import { deleteFirebaseNote } from 'firebase/note';
+import { deleteFirebaseNote, renameNote } from 'firebase/note';
 import { useLoadingStore } from 'store/loadingStore';
 import { deleteFolderInDb, insertIntoFolderSync } from 'sqlite/folder';
-import { deleteNoteInDb, insertIntoNoteSync } from 'sqlite/note';
+import { deleteNoteInDb, insertIntoNoteSync, renameNoteInDb } from 'sqlite/note';
+import { renameLocalFile } from 'utils/offlineDirectory/renameFiles';
+import { useNotesStore } from 'store/notesStore';
+import { useUserStore } from 'store/userStore';
 
 type FolderItemProps = {
   file: Folder | Note;
@@ -37,6 +40,8 @@ export const FolderItem = ({
   const { colorScheme } = useColorScheme();
   const navigation = useNavigation<NavigationProp<ParamListBase>>();
   const { setLoading, setContent } = useLoadingStore();
+  const { updateNote,notes } = useNotesStore();
+  const { authState } = useUserStore();
 
   const slideAnimation = useRef(new Animated.Value(0)).current;
   const opacityAnimation = useRef(new Animated.Value(0)).current;
@@ -86,8 +91,23 @@ export const FolderItem = ({
   };
 
   const handleRename = async (name: string) => {
-    console.log(name);
-
+    const ifAlreadyExists = notes.find((note) => note.name === name);
+    if (ifAlreadyExists) {
+      ToastAndroid.show('File with this name already exists', ToastAndroid.SHORT);
+      return;
+    }
+    setContent('Renaming...');
+    setLoading(true);
+    await renameNoteInDb(file.id, name);
+    updateNote(file.id, { name });
+    const {message, success} = await renameLocalFile(`${currentPath}${file.name}.html`, `${currentPath}${name}.html`)
+    const renamedInFirebase = await renameNote(file.id, name, `${currentPath}${name}.html`);
+    if (!renamedInFirebase) {
+      console.error('Error renaming note in Firebase');
+      await insertIntoNoteSync(file.id, 'update', 'local');
+    }
+    ToastAndroid.show(message, ToastAndroid.SHORT);
+    setLoading(false);
     setMenuVisible(false);
   };
 
@@ -99,19 +119,19 @@ export const FolderItem = ({
       await FileSystem.deleteAsync(file.type === 'folder' ? filePath : `${filePath}.html`);
       if (file.type === 'folder') {
         await deleteFolderInDb(file.id);
-        const driveDeletion = await deleteDriveFileFolder(file.driveId!);
-        const firebaseDeletion = await deleteFirebaseFolder(file.id);
+        const driveDeletion = await deleteDriveFileFolder(file.driveId!, authState);
+        const firebaseDeletion = await deleteFirebaseFolder(file.id, );
         await deleteAllChildren(file.id);
         if (!driveDeletion || !firebaseDeletion) {
-          console.error('Error deleting folder from drive or Firebase');
+          console.log('Error deleting folder from drive or Firebase');
           await insertIntoFolderSync(file.id, 'delete', 'local');
         }
       } else if (file.type === 'note') {
         await deleteNoteInDb(file.id)
-        const driveDeletion = await deleteDriveFileFolder(file.driveId!);
+        const driveDeletion = await deleteDriveFileFolder(file.driveId!, authState);
         const firebaseDeletion = await deleteFirebaseNote(file.id);
         if (!driveDeletion || !firebaseDeletion) {
-          console.error('Error deleting note from drive or Firebase');
+          console.log('Error deleting note from drive or Firebase');
           await insertIntoNoteSync(file.id, 'delete', 'local');
         }
       }
@@ -168,7 +188,8 @@ export const FolderItem = ({
               },
             ],
           }}>
-          <TouchableOpacity
+          {file.type === 'note' && (
+            <TouchableOpacity
             className="z-10 flex-row items-center p-3"
             onPress={() => {
               setIsDialogVisible(true);
@@ -177,6 +198,7 @@ export const FolderItem = ({
             <MaterialIcon name="edit" size={24} color="#f3a49d" />
             <Typo className="ml-2">Rename</Typo>
           </TouchableOpacity>
+          )}
 
           <View className="h-[1px] bg-gray-200" />
 

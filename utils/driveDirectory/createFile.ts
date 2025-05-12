@@ -1,10 +1,15 @@
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { findDoraraFolderId } from './findOrCreateDoraraFolder';
+import { AuthState } from 'store/userStore';
 
 export const createDriveFile = async (
   fileName: string,
-  parentFolderId: string
+  parentFolderId: string,
+  authState: AuthState
 ): Promise<{ success: boolean; fileId: string | null }> => {
+  if(authState !== 'authenticated') {
+    return { success: false, fileId: null };
+  }
   try {
     const { accessToken } = await GoogleSignin.getTokens();
     if (!accessToken) {

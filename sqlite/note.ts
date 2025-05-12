@@ -27,7 +27,6 @@ export const createNoteInDb = async (id: string, name: string, selectedFolder: F
           Date.now(),
         ]
       );
-      await db.closeAsync();
 }
 
 export const deleteNoteInDb = async (id: string) => {
@@ -56,5 +55,12 @@ export const insertIntoNoteSync = async (id: string, operation: string, source: 
         source,
       ]
     );
-    await db.closeAsync();
+}
+
+export const renameNoteInDb = async (id: string, name: string) => {
+    const db = await getDb();
+    await db.runAsync(
+        `UPDATE notes SET name = ? WHERE id = ?`,
+        [name, id]
+      );
 }

@@ -10,10 +10,12 @@ import { MaterialIcon } from 'components/MaterialIcon';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { OnboardingStackParamList } from 'navigation/OnboardingNavigator';
 import { useSQLiteContext } from 'expo-sqlite';
+import { useNotesStore } from 'store/notesStore';
 
 export default function OnboardingSecond() {
   const db = useSQLiteContext();
   const { setAuthState, setUser } = useUserStore();
+  const { addFolder } = useNotesStore();
   const containerAnim = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation<NavigationProp<OnboardingStackParamList>>();
   useEffect(() => {
@@ -78,7 +80,7 @@ export default function OnboardingSecond() {
               <Typo color="#949191">→ No sign-in required.</Typo>
             </View>
             <TouchableOpacity
-              onPress={() => offlineFlow(setAuthState, setUser)}
+              onPress={() => offlineFlow(setAuthState, setUser, addFolder)}
               className="mt-4 flex flex-row items-center justify-center gap-x-3 rounded-xl bg-[#f3a49d] p-3">
               <MaterialIcon name="phone-android" size={24} />
               <Typo className="text-lg font-bold ">Continue Offline</Typo>

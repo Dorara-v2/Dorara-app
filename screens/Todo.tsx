@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { View, TouchableOpacity, ScrollView, Animated, Modal } from 'react-native';
 import { MaterialIcon } from 'components/MaterialIcon';
 import ScreenContent from 'components/ScreenContent';
@@ -74,13 +74,31 @@ const groupTodosByDate = (todos: Todo[], selectedCategory: Category['id']) => {
 };
 
 export const TodoScreen = () => {
-  const { todo, category, setTodo } = useTodoStore();
+  const { todo: storeTodo, category, setTodo } = useTodoStore();
   const [selectedCategory, setSelectedCategory] = useState<Category>({
     id: 'all',
     name: 'All',
     icon: 'checklist',
     color: '#f3a49d',
   });
+
+  const todo = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return storeTodo.filter((t) => {
+      if (t.isCompleted !== 1) return true;
+
+      if (t.date) {
+        const todoDate = new Date(t.date);
+        todoDate.setHours(0, 0, 0, 0);
+        return todoDate >= today;
+      }
+
+      return false;
+    });
+  }, [storeTodo, selectedCategory]);
+
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const groupedTodos = groupTodosByDate(todo, selectedCategory.id);
   const db = useSQLiteContext();
@@ -118,19 +136,37 @@ export const TodoScreen = () => {
     setIsAddModalVisible(true);
   };
 
-  const renderTodoGroup = (date: string, dateTodos: Todo[]) => (
-    <View key={date} className="mb-6">
-      <View className='flex-row items-center justify-between'>
-      <Typo className="mb-3 text-lg font-bold text-gray-600">{date}</Typo>
-       {dateTodos[0].date! < Date.now() && (
-        <Typo className="mb-3 text-md">Overdue</Typo>)
+  const renderTodoGroup = (date: string, dateTodos: Todo[]) => {
+    const isOverdue = () => {
+      if (date === 'Today' || date === 'Tomorrow') {
+        return false;
       }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const groupDate = parse(date, 'MMM d, yyyy', new Date());
+      return groupDate < today;
+    };
+
+    return (
+      <View key={date} className="mb-6">
+        <View className="flex-row items-center justify-between">
+          <Typo className="mb-3 text-lg font-bold text-gray-600">{date}</Typo>
+          {isOverdue() && <Typo className="text-md mb-3 text-red-500">Overdue</Typo>}
+        </View>
+        {dateTodos.map((todo: Todo) => (
+          <TodoItem
+            key={todo.id}
+            todo={todo}
+            toggleTodo={toggleTodo}
+            getCategoryIcon={getCategoryIcon}
+            onLongPressAction={onLongPress}
+          />
+        ))}
       </View>
-      {dateTodos.map((todo: Todo) =>
-        <TodoItem key={todo.id} todo={todo} toggleTodo={toggleTodo} getCategoryIcon={getCategoryIcon} onLongPressAction={onLongPress} />
-      )}
-    </View>
-  );
+    );
+  };
 
   const getCategoryIcon = (categoryId: string) => {
     const categoryItem = category.find((cat) => cat.id === categoryId);

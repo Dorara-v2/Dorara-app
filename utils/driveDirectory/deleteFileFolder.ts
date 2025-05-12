@@ -1,6 +1,10 @@
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { AuthState } from 'store/userStore';
 
-export const deleteDriveFileFolder = async (id: string): Promise<boolean> => {
+export const deleteDriveFileFolder = async (id: string, authState: AuthState): Promise<boolean> => {
+  if(authState !== 'authenticated') {
+    return false;
+  }
   const token = (await GoogleSignin.getTokens()).accessToken;
   if (!token) {
     console.log('No token found');

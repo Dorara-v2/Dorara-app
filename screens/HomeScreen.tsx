@@ -15,6 +15,7 @@ export default function HomeScreen() {
   const navigation = useNavigation<NavigationProp<MainStackParamList>>();
   const db = useSQLiteContext();
   const { folders } = useNotesStore();
+  console.log('folders', folders);
   return (
     <ScreenContent>
       <TouchableOpacity

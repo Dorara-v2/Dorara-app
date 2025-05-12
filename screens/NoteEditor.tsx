@@ -11,6 +11,7 @@ import { updateDriveFileContent } from 'utils/driveDirectory/updateFile';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useLoadingStore } from 'store/loadingStore';
 import * as ImagePicker from 'expo-image-picker';
+import { useUserStore } from 'store/userStore';
 
 type NoteEditorRouteProp = RouteProp<MainStackParamList, 'NoteEditor'>;
 export default function NoteEditor() {
@@ -27,6 +28,7 @@ export default function NoteEditor() {
   const [linkText, setLinkText] = useState('');
   const [linkUrl, setLinkUrl] = useState('https://');
   const [linkPosition, setLinkPosition] = useState<{ index: number } | null>(null);
+  const { authState } = useUserStore();
 
   const saveContent = async () => {
     try {
@@ -34,7 +36,7 @@ export default function NoteEditor() {
       if (_editor.current) {
         _editor.current.getHtml().then(async (html) => {
           FileSystem.writeAsStringAsync(filePath, html);
-          const updatedInDrive = await updateDriveFileContent(file.driveId!, html);
+          const updatedInDrive = await updateDriveFileContent(file.driveId!, html, authState);
           if (!updatedInDrive) {
             console.log('Error updating file in Drive');
             await db.runAsync(

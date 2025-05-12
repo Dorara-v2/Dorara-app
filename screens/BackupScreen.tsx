@@ -109,20 +109,16 @@ export default function BackupScreen({ onBackupComplete }: props) {
         addNote(note);
       }
     }
-    setTimeout(() => {
-      onBackupComplete();
-    }, 2000);
-
+    console.log('Backup completed');
+    onBackupComplete();
     await AsyncStorage.setItem(`${user?.uid}-backupDone`, 'true');
   };
 
   useEffect(() => {
     backup();
-
     const messageRotation = setInterval(() => {
       setMessageIndex((prevIndex) => (prevIndex + 1) % messages.length);
     }, 2000);
-
     return () => clearInterval(messageRotation);
   }, []);
 

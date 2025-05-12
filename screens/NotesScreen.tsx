@@ -2,7 +2,7 @@ import { FolderItem } from 'components/FolderItem';
 import ScreenContent from 'components/ScreenContent';
 import { Typo } from 'components/Typo';
 import { useColorScheme } from 'nativewind';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Animated, FlatList, TouchableOpacity, View, Alert } from 'react-native';
 import { createLocalFile } from 'utils/offlineDirectory/createFiles';
 import { CreateDialog } from 'components/CreateDialog';
@@ -20,6 +20,7 @@ import { createFirebaseFolder } from 'firebase/folder';
 import { createFirebaseNote } from 'firebase/note';
 import { createFolderInDb, insertIntoFolderSync } from 'sqlite/folder';
 import { createNoteInDb } from 'sqlite/note';
+import { useUserStore } from 'store/userStore';
 export default function NotesScreen() {
   const { setContent, setLoading, isLoading } = useLoadingStore();
   const { colorScheme } = useColorScheme();
@@ -33,7 +34,7 @@ export default function NotesScreen() {
   const [dialogVisible, setDialogVisible] = useState(false);
   const [createType, setCreateType] = useState<'file' | 'folder'>('folder');
   const menuAnimation = useState(new Animated.Value(0))[0];
-
+  const { authState } = useUserStore();
   type FolderOrNote = Folder | Note;
 
   const folderNotesInSelectedFolder = useMemo(() => {
@@ -76,7 +77,8 @@ export default function NotesScreen() {
         await createLocalFolder(selectedFolder.localPath + name);
         const { success, folderId } = await createDriveFolder(
           name,
-          selectedFolder.driveId as string
+          selectedFolder.driveId as string,
+          authState
         );
         await createFolderInDb(id, name, selectedFolder, success ? folderId : null);
         addFolder({
@@ -114,7 +116,7 @@ export default function NotesScreen() {
         const id = uuid.v4() as string;
 
         await createLocalFile(selectedFolder.localPath + name + '.html');
-        const { success, fileId } = await createDriveFile(name, selectedFolder.driveId as string);
+        const { success, fileId } = await createDriveFile(name, selectedFolder.driveId as string, authState);
         await createNoteInDb(id, name, selectedFolder, success ? fileId : null);
         addNote({
           id,
@@ -154,7 +156,6 @@ export default function NotesScreen() {
       setLoading(false);
     } catch (error) {
       console.error('Error creating folder:', error);
-      Alert.alert('Error', 'Failed to create folder');
       setLoading(false);
     }
     loadFolders();

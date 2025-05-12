@@ -26,7 +26,6 @@ export const createFolderInDb = async (id: string, name: string, selectedFolder:
           Date.now(),
         ]
       );
-      await db.closeAsync();
 }
 
 export const deleteFolderInDb = async (id: string) => {
@@ -55,6 +54,5 @@ export const insertIntoFolderSync = async (id: string, operation: string, source
         source,
       ]
     );
-    await db.closeAsync();
 }
 
